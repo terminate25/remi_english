@@ -1,0 +1,1057 @@
+{% extends "base.html" %}
+{% load gacoitags %}
+{% block content %}
+
+{% autoescape off %}
+{{ keuForm.render_start_form }}
+{{ keuForm.render_create_course_content }}
+{% csrf_token %}
+{{ keuForm.render_end_create_course }}
+{% endautoescape %}
+
+
+<!--select level and lesson -->
+<script type="text/javascript">
+    function SelectLesson()
+    {
+        var level_select = $('.level-select').val();
+        $.ajax({
+            url: "create_course/",
+            type: "POST",
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'level_select': level_select,
+                'is_lesson_select': true
+            },
+            success: function (data) {
+                var lesson_select = data['lesson_select'];
+                $('.lesson-select').children('option').remove();
+                for (var i = 0; i < lesson_select.length; i++) {
+                    $('.lesson-select').append($('<option></option>').val(lesson_select[i].id).html(lesson_select[i].name));
+                }
+            },
+            error: function () {
+                alert("ERROR");
+            }
+        });
+    }
+    $('.course-select').on('change', function() {
+        var course_select = $('.course-select').val();
+        $.ajax({
+            url: "create_course/",
+            type: "POST",
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'course_select': course_select,
+                'is_level_select': true
+            },
+            success: function (data) {
+                var level_select = data['level_select'];
+                $('.level-select').children('option').remove();
+                for (var i = 0; i < level_select.length; i++) {
+                    $('.level-select').append($('<option></option>').val(level_select[i].id).html(level_select[i].name));
+                }
+                SelectLesson();
+            },
+            error: function () {
+                alert("ERROR");
+            }
+        });
+    });
+
+    $('.level-select').on('change', function() {
+        SelectLesson();
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function Format_multiple_file(selector, list_file) {
+
+        $(selector).ace_file_input({
+            style: 'well',
+            btn_choose: 'Drop images here or click to choose',
+            btn_change: null,
+            no_icon: 'ace-icon fa fa-cloud-upload',
+            droppable: true,
+            thumbnail: 'small'//large | fit
+
+            ,
+            preview_error: function (filename, error_code) {
+
+            }
+
+        });
+
+        $(selector).ace_file_input('show_file_list', list_file);
+
+
+
+        $('#id-file-format').removeAttr('checked').on('change', function () {
+            var whitelist_ext, whitelist_mime;
+            var btn_choose
+            var no_icon
+            if (this.checked) {
+                btn_choose = "Drop images here or click to choose";
+                no_icon = "ace-icon fa fa-picture-o";
+
+                whitelist_ext = ["jpeg", "jpg", "png", "gif", "bmp"];
+                whitelist_mime = ["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
+            }
+            else {
+                btn_choose = "Drop images here or click to choose";
+                no_icon = "ace-icon fa fa-cloud-upload";
+
+
+                whitelist_ext = null;//all extensions are acceptable
+                whitelist_mime = null;//all mimes are acceptable
+            }
+            var file_input = $(selector);
+            file_input
+                .ace_file_input('update_settings',
+                    {
+                        'btn_choose': btn_choose,
+                        'no_icon': no_icon,
+                        'allowExt': whitelist_ext,
+                        'allowMime': whitelist_mime
+                    })
+            file_input.ace_file_input('reset_input');
+
+            file_input
+                .off('file.error.ace')
+                .on('file.error.ace', function (e, info) {
+
+                });
+            file_input
+                .off('file.preview.ace')
+                .on('file.preview.ace', function (e, info) {
+                    console.log(info.file.width);
+                    console.log(info.file.height);
+                    e.preventDefault();//to prevent preview
+                });
+
+        });
+
+//        $('[data-title="Drop images here or click to choose"]').append(
+//            "<span class=\"ace-file-name\" data-title=\"2.jpg\">" +
+//            "<img class=\"middle\" " +
+//            "src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==\">" +
+//            "<i class=\" ace-icon fa fa-picture-o file-image\">" +
+//            "</i>" +
+//            "</span>"
+//        );
+//        $('.ace-file-name .middle').css("background-image", "url(data:image/png;base64,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)");
+//        $('.ace-file-name .middle').css("width", "50px");
+//        $('.ace-file-name .middle').css("height", "50px");
+    }
+    $(document).ready(function(){
+        //Comfirm
+
+        var is_edit = "{{ is_edit }}";
+//        var test_list = {{ test_list|safe}};
+        var lesson_list = {{ lesson_list|safe }};
+        var question_list = {{ question_list|safe }};
+        var lesson_level = lesson_list["lesson_level"];
+        var lesson_content = lesson_list["lesson_content"];
+        var lesson_title = lesson_list["lesson_title"];
+        var lesson_summary = lesson_list["lesson_summary"];
+//        var question_type = question_list[0].type;
+        var lesson_course_video = lesson_list["lesson_course_video"];
+        var lesson_summary_pdf = lesson_list["lesson_summary"];
+        if (is_edit == "1")
+        {
+            if (lesson_course_video != "")
+            {
+                $('.course-video').ace_file_input('show_file_list', [lesson_course_video]);
+            }
+            if (lesson_summary_pdf != "")
+            {
+                $('.lesson-summary').ace_file_input('show_file_list', [lesson_summary_pdf]);
+            }
+
+            for (i=0; i < question_list.length; i++) {
+
+                if (question_list[i].type == 4)
+                {
+                    $('.simple-file').ace_file_input('show_file_list', [question_list[i].question]);
+                }
+                if (question_list[i].type != 5)
+                {
+                    if (question_list[i].type == 6)
+                    {
+                        var image_selector = '.simple-file-image-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        var audio_selector = '.simple-file-audio-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        var image_hint_selector = '.simple-file-image_hint-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        $(image_selector).ace_file_input('show_file_list', question_list[i].list_filename_question[0]);
+                        $(audio_selector).ace_file_input('show_file_list', question_list[i].list_filename_question[1]);
+                        $(image_hint_selector).ace_file_input('show_file_list', question_list[i].list_filename_question[2]);
+
+                    }
+                    else if (question_list[i].type == 7)
+                    {
+                        var video_selector = '.simple-file-video-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        var image_hint_selector = '.simple-file-image_hint-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        $(video_selector).ace_file_input('show_file_list', question_list[i].list_filename_question[0]);
+                        $(image_hint_selector).ace_file_input('show_file_list', question_list[i].list_filename_question[1]);
+                    }
+                    else if (question_list[i].type == 3)
+                    {
+                        var image_selector = '.simple-file-image-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        var audio_selector = '.simple-file-audio-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        $(image_selector).ace_file_input('show_file_list', question_list[i].list_filename_question[0]);
+                        $(audio_selector).ace_file_input('show_file_list', question_list[i].list_filename_question[1]);
+                        var mutiple_selector = '.mutiple-file-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        Format_multiple_file(mutiple_selector, question_list[i].list_filename_answer);
+                    }
+                    else
+                    {
+                        var simple_selector = '.simple-file-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        $(simple_selector).ace_file_input('show_file_list', [question_list[i].list_filename_question[0]]);
+
+                        var mutiple_selector = '.mutiple-file-' + question_list[i].id + '-' + question_list[i].type + '-' + question_list[i].test_id;
+                        Format_multiple_file(mutiple_selector, question_list[i].list_filename_answer);
+                    }
+                }
+
+//                }
+            }
+
+        }
+
+    });
+</script>
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+    function BacktoList()
+    {
+        window.location.href = '/list_courses/';
+    }
+    $('#create_course_form').on('submit', function(e) {
+        e.preventDefault();
+        alert("Submit success");
+
+        main_function();
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function CloseDetails(e) {
+        e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.remove();
+    }
+
+    $(document).ready(function () {
+        EditInputFile();
+        renderUploadForm();
+    });
+
+    function DisableSelectType() {
+        $('#question_type').attr('disabled', 'disabled');
+    }
+
+    function EditInputFile() {
+        $('.input-file').ace_file_input({
+            no_file: 'No File ...',
+            btn_choose: 'Choose',
+            btn_change: 'Change',
+            droppable: false,
+            onchange: null,
+            thumbnail: false //| true | large
+        });
+        $('.lesson-summary').ace_file_input({
+            no_file: 'No File ...',
+            btn_choose: 'Choose',
+            btn_change: 'Change',
+            droppable: false,
+            onchange: null,
+            thumbnail: false //| true | large
+        });
+    }
+
+    function AddTest() {
+        var form = document.forms["create_course_form"];
+        var typeChoose = $('#question_type').val();
+        var current_test = $('#current_test').val();
+        $.ajax({
+            url: "create_course/",
+            type: "POST",
+            data: {
+                'type': typeChoose,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+//                'current_question': current_question,
+//                'lesson_id': lesson_id,
+//                'current_step': current_step,
+                'is_add_question': true,
+                'add_test' : true,
+                'current_test': current_test
+            },
+            success: function (data) {
+                if (data == null) {
+                    return;
+                }
+                var question_form = data['question_form'];
+                var current_test = data['current_test'];
+                form['current_test'].value = current_test;
+                $('#question-form').append(question_form);
+                renderUploadForm();
+                EditInputFile();
+            },
+
+            error: function () {
+                alert("ERROR");
+            }
+        });
+    }
+
+    function AddQuestion(ev, questionType, testID, currentQuestionIndex) {
+        // DisableSelectType();
+        AddQuestions(ev, questionType, testID, currentQuestionIndex);
+        EditInputFile();
+        return;
+
+    }
+    function BackToList()
+    {
+        window.location.href = '/list_courses/';
+    }
+
+
+</script>
+<script type="text/javascript">
+    var test_global = [];
+    function AddQuestions(ev, questionType, testID, currentQuestionIndex) {
+        var form = document.forms["create_course_form"];
+        // var current_question = $('#current_question').val();
+//        var lesson_id = $('#lesson_id').val();
+//        var current_step = $('#current_step').val();
+        var current_question = currentQuestionIndex;
+        $.ajax({
+            url: "create_course/",
+            type: "POST",
+            data: {
+                'type': questionType,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'current_question': current_question,
+                'current_test' : testID,
+//                'lesson_id': lesson_id,
+//                'current_step': current_step,
+                'is_add_question': true
+            },
+            success: function (data) {
+                if (data == null) {
+                    return;
+                }
+                var question_form = data['question_form'];
+                var current_question = data['current_question'];
+//                form['current_question'].value = current_question;
+                $('#test-' + String(questionType) + '-' + String(testID)).append(question_form);
+                renderUploadForm();
+                EditInputFile();
+                var nextQuestionIndex = currentQuestionIndex + 1;
+                ev.onclick = function() { AddQuestion(ev, questionType, testID, nextQuestionIndex); }
+            },
+
+            error: function () {
+                alert("ERROR");
+            }
+        });
+    }
+    function renderUploadForm() {
+        $('.course-video').ace_file_input({
+            no_file: 'No File ...',
+            btn_choose: 'Choose',
+            btn_change: 'Change',
+            droppable: false,
+            onchange: null,
+            thumbnail: false //| true | large
+            //whitelist:'gif|png|jpg|jpeg'
+            //blacklist:'exe|php'
+            //onchange:''
+            //
+        });
+        //pre-show a file name, for example a previously selected file
+        //$('#id-input-file-1').ace_file_input('show_file_list', ['myfile.txt'])
+
+
+        $('.id-input-file-3').ace_file_input({
+            style: 'well',
+            btn_choose: 'Drop images here or click to choose',
+            btn_change: null,
+            no_icon: 'ace-icon fa fa-cloud-upload',
+            droppable: true,
+            thumbnail: 'small'//large | fit
+            //,icon_remove:null//set null, to hide remove/reset button
+            /**,before_change:function(files, dropped) {
+						//Check an example below
+						//or examples/file-upload.html
+						return true;
+					}*/
+            /**,before_remove : function() {
+						return true;
+					}*/
+            ,
+            preview_error: function (filename, error_code) {
+                //name of the file that failed
+                //error_code values
+                //1 = 'FILE_LOAD_FAILED',
+                //2 = 'IMAGE_LOAD_FAILED',
+                //3 = 'THUMBNAIL_FAILED'
+                //alert(error_code);
+            }
+
+        }).on('change', function () {
+            var question_id = this.name.split("-")[1];
+            test_global.push(question_id);
+            var files = $(this).data('ace_input_files');
+            var selectAnswer = $(this).closest('div').parent().next().next().children().children('select');
+            $(selectAnswer).children('option').remove();
+            for (var i = 0; i < files.length; i++) {
+                console.log(files[i].name);
+                <!--var selectAnswer = $(this).parent().parent().find('.form-control');-->
+
+
+                var strA = '<option value="' + files[i].name + '">' + files[i].name + '</option>';
+                selectAnswer.append(strA);
+            }
+
+        });
+
+//        $('.id-input-file-3').ace_file_input('show_file_list', ['1.mp3','2.mp3']);
+
+//dynamically change allowed formats by changing allowExt && allowMime function
+        $('#id-file-format').removeAttr('checked').on('change', function () {
+            var whitelist_ext, whitelist_mime;
+            var btn_choose
+            var no_icon
+            if (this.checked) {
+                btn_choose = "Drop images here or click to choose";
+                no_icon = "ace-icon fa fa-picture-o";
+
+                whitelist_ext = ["jpeg", "jpg", "png", "gif", "bmp"];
+                whitelist_mime = ["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
+            }
+            else {
+                btn_choose = "Drop images here or click to choose";
+                no_icon = "ace-icon fa fa-cloud-upload";
+
+
+                whitelist_ext = null;//all extensions are acceptable
+                whitelist_mime = null;//all mimes are acceptable
+            }
+            var file_input = $('.id-input-file-3');
+            file_input
+                .ace_file_input('update_settings',
+                    {
+                        'btn_choose': btn_choose,
+                        'no_icon': no_icon,
+                        'allowExt': whitelist_ext,
+                        'allowMime': whitelist_mime
+                    })
+            file_input.ace_file_input('reset_input');
+
+            file_input
+                .off('file.error.ace')
+                .on('file.error.ace', function (e, info) {
+                    //console.log(info.file_count);//number of selected files
+                    //console.log(info.invalid_count);//number of invalid files
+                    //console.log(info.error_list);//a list of errors in the following format
+
+                    //info.error_count['ext']
+                    //info.error_count['mime']
+                    //info.error_count['size']
+
+                    //info.error_list['ext']  = [list of file names with invalid extension]
+                    //info.error_list['mime'] = [list of file names with invalid mimetype]
+                    //info.error_list['size'] = [list of file names with invalid size]
+
+
+                    /**
+                     if( !info.dropped ) {
+							//perhapse reset file field if files have been selected, and there are invalid files among them
+							//when files are dropped, only valid files will be added to our file array
+							e.preventDefault();//it will rest input
+						}
+                     */
+
+
+                    //if files have been selected (not dropped), you can choose to reset input
+                    //because browser keeps all selected files anyway and this cannot be changed
+                    //we can only reset file field to become empty again
+                    //on any case you still should check files with your server side script
+                    //because any arbitrary file can be uploaded by user and it's not safe to rely on browser-side measures
+                });
+
+
+            file_input
+                .off('file.preview.ace')
+                .on('file.preview.ace', function (e, info) {
+                    console.log(info.file.width);
+                    console.log(info.file.height);
+                    e.preventDefault();//to prevent preview
+                });
+
+        });
+    }
+
+    function main_function()
+    {
+        var lesson_id = '';
+        lesson_id = "{{ lesson_id }}";
+        var file_input = $('[data-step=3]').find('.question-option');
+        var course_video = $('[data-step=1]').find('.course-video');
+
+        var current_question = $('#current_question').val();
+        var course_part = $('[data-step=1]').find('.course-select').val();
+        var level_part = $('[data-step=1]').find('.level-select').val();
+        var lesson_part = $('[data-step=1]').find('.lesson-select').val();
+        var lesson_title = $('[data-step=2]').find('.lesson-title').val();
+        var lesson_content = $('[data-step=2]').find('.lesson-content').val();
+        var lesson_summary = $('[data-step=2]').find('.lesson-summary');
+        var question_type = $('[data-step=3]').find('.question-type').val();
+        var answer_type =  $('[data-step=3]').find('.answer-option');
+        var test_name =  $('[data-step=3]').find('.test-name');
+        var goal_number =  $('[data-step=3]').find('.test-goalnumber');
+        var goal_percent =  $('[data-step=3]').find('.test-goalpercent');
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        var list_question_change = test_global;
+        start_spinner();
+
+        //remove answer select
+        //answer_type.find('option:selected').remove();
+        // For type 5
+        var question_text_content =  $('[data-step=3]').find('.question-text-content');
+        var radio_answer = $('[data-step=3]').find('.radio-answer:checked');
+
+        var formData = new FormData();
+
+        //File
+        for (i=0;i<file_input.length;i++) {
+            for (j = 0; j < file_input[i].files.length; j++) {
+                formData.append(file_input[i].name, file_input[i].files[j]);
+            }
+        }
+
+        // Question text content -> For type Nam
+        for (var l=0; l< question_text_content.length; l++)
+        {
+            formData.append(question_text_content[l].name, question_text_content[l].value);
+        }
+        for (var g=0; g < radio_answer.length; g++ )
+        {
+            formData.append(radio_answer[g].name, radio_answer[g].value);
+        }
+
+        //Answer
+        for (k=0; k < answer_type.length;k++)
+        {
+            if (answer_type[k].name != null)
+                formData.append(answer_type[k].name,$(answer_type[k]).val());
+            else
+            {
+                formData.append(answer_type[k].id, $(answer_type[k]).val());
+            }
+        }
+        //Number, name, percent of test
+        for (n=0; n < test_name.length;n++)
+        {
+            formData.append(test_name[n].name,$(test_name[n]).val());
+            formData.append(goal_number[n].name,$(goal_number[n]).val());
+            formData.append(goal_percent[n].name,$(goal_percent[n]).val());
+        }
+        formData.append('course_video', course_video[0].files[0]);
+        formData.append('lesson_summary', lesson_summary[0].files[0]);
+        formData.append('csrfmiddlewaretoken', csrftoken);
+        formData.append('current_question', current_question);
+        formData.append('lesson_part', lesson_part);
+        formData.append('lesson_title', lesson_title);
+        formData.append('lesson_content', lesson_content);
+        formData.append('question_type', question_type);
+        formData.append('is_finished', true);
+
+        formData.append('lesson_id', lesson_id);
+
+        for (i=0; i < test_global.length; i++)
+        {
+            formData.append('question_change', test_global[i]);
+        }
+        //formData.append('list_question_change', list_question_change);
+        $.ajax({
+            type: 'POST',
+            data: formData,
+            url: "create_course/",
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                result = data['message'];
+                stop_spinner();
+                bootbox.dialog({
+                    message: result,
+                    buttons: {
+                        "success": {
+                            "label": "OK",
+                            "className": "btn-sm btn-primary",
+                            callback: function () {
+                                window.location.href = '/list_courses/';
+                                }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+<script type="text/javascript">
+
+    jQuery(function ($) {
+        EditInputFile();
+        $('[data-rel=tooltip]').tooltip();
+
+        $('.select2').css('width', '200px').select2({allowClear: true})
+            .on('change', function () {
+                $(this).closest('form').validate().element($(this));
+            });
+
+
+        var $validation = false;
+        $('#fuelux-wizard-container').ace_wizard({
+            //step: 2 //optional argument. wizard will jump to step "2" at first
+            //buttons: '.wizard-actions:eq(0)'
+        }).on('actionclicked.fu.wizard', function (e, info) {
+            if (info.step == 1 && $validation) {
+                if (!$('#validation-form').valid()) e.preventDefault();
+            }
+            <!--SubmitForm();-->
+        })
+        .on('changed.fu.wizard', function() {
+             <!--SubmitForm();-->
+        })
+            .on('finished.fu.wizard', function (e) {
+
+                main_function();
+//                bootbox.dialog({
+//                    message: "Thank you! Your information was successfully saved!",
+//                    buttons: {
+//                        "success": {
+//                            "label": "OK",
+//                            "className": "btn-sm btn-primary"
+//                        }
+//                    }
+//                });
+            }).on('stepclick.fu.wizard', function (e) {
+            //e.preventDefault();//this will prevent clicking and selecting steps
+        });
+
+
+        //jump to a step
+        /**
+         var wizard = $('#fuelux-wizard-container').data('fu.wizard')
+         wizard.currentStep = 3;
+         wizard.setState();
+         */
+
+        //determine selected step
+        //wizard.selectedItem().step
+
+
+        //hide or show the other form which requires validation
+        //this is for demo only, you usullay want just one form in your application
+        $('#skip-validation').removeAttr('checked').on('click', function () {
+            $validation = this.checked;
+            if (this.checked) {
+                $('#sample-form').hide();
+                $('#validation-form').removeClass('hide');
+            }
+            else {
+                $('#validation-form').addClass('hide');
+                $('#sample-form').show();
+            }
+        })
+
+
+        //documentation : http://docs.jquery.com/Plugins/Validation/validate
+
+
+        $.mask.definitions['~'] = '[+-]';
+        $('#phone').mask('(999) 999-9999');
+
+        jQuery.validator.addMethod("phone", function (value, element) {
+            return this.optional(element) || /^\(\d{3}\) \d{3}\-\d{4}( x\d{1,6})?$/.test(value);
+        }, "Enter a valid phone number.");
+
+        $('#validation-form').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: "",
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true,
+                    minlength: 5
+                },
+                password2: {
+                    required: true,
+                    minlength: 5,
+                    equalTo: "#password"
+                },
+                name: {
+                    required: true
+                },
+                phone: {
+                    required: true,
+                    phone: 'required'
+                },
+                url: {
+                    required: true,
+                    url: true
+                },
+                comment: {
+                    required: true
+                },
+                state: {
+                    required: true
+                },
+                platform: {
+                    required: true
+                },
+                subscription: {
+                    required: true
+                },
+                gender: {
+                    required: true,
+                },
+                agree: {
+                    required: true,
+                }
+            },
+
+            messages: {
+                email: {
+                    required: "Please provide a valid email.",
+                    email: "Please provide a valid email."
+                },
+                password: {
+                    required: "Please specify a password.",
+                    minlength: "Please specify a secure password."
+                },
+                state: "Please choose state",
+                subscription: "Please choose at least one option",
+                gender: "Please choose gender",
+                agree: "Please accept our policy"
+            },
+
+
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                $(e).remove();
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                }
+                else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                }
+                else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                }
+                else error.insertAfter(element.parent());
+            },
+
+            submitHandler: function (form) {
+            },
+            invalidHandler: function (form) {
+            }
+        });
+
+        $('#modal-wizard-container').ace_wizard();
+        $('#modal-wizard.wizard-actions.btn[data-dismiss=modal]').removeAttr('disabled');
+
+
+        /**
+         $('#date').datepicker({autoclose:true}).on('changeDate', function(ev) {
+					$(this).closest('form').validate().element($(this));
+				});
+
+         $('#mychosen').chosen().on('change', function(ev) {
+					$(this).closest('form').validate().element($(this));
+				});
+         */
+
+
+        $(document).one('ajaxloadstart.page', function (e) {
+            //in ajax mode, remove remaining elements before leaving page
+            $('[class*=select2]').remove();
+        });
+    })
+</script>
+<script type="text/javascript">
+    jQuery(function ($) {
+
+        function showErrorAlert(reason, detail) {
+            var msg = '';
+            if (reason === 'unsupported-file-type') {
+                msg = "Unsupported format " + detail;
+            }
+            else {
+                //console.log("error uploading file", reason, detail);
+            }
+            $('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                '<strong>File upload error</strong> ' + msg + ' </div>').prependTo('#alerts');
+        }
+
+        //$('#editor1').ace_wysiwyg();//this will create the default editor will all buttons
+
+        //but we want to change a few buttons colors for the third style
+        $('#editor1').ace_wysiwyg({
+            toolbar:
+                [
+                    'font',
+                    null,
+                    'fontSize',
+                    null,
+                    {name: 'bold', className: 'btn-info'},
+                    {name: 'italic', className: 'btn-info'},
+                    {name: 'strikethrough', className: 'btn-info'},
+                    {name: 'underline', className: 'btn-info'},
+                    null,
+                    {name: 'insertunorderedlist', className: 'btn-success'},
+                    {name: 'insertorderedlist', className: 'btn-success'},
+                    {name: 'outdent', className: 'btn-purple'},
+                    {name: 'indent', className: 'btn-purple'},
+                    null,
+                    {name: 'justifyleft', className: 'btn-primary'},
+                    {name: 'justifycenter', className: 'btn-primary'},
+                    {name: 'justifyright', className: 'btn-primary'},
+                    {name: 'justifyfull', className: 'btn-inverse'},
+                    null,
+                    {name: 'createLink', className: 'btn-pink'},
+                    {name: 'unlink', className: 'btn-pink'},
+                    null,
+                    {name: 'insertImage', className: 'btn-success'},
+                    null,
+                    'foreColor',
+                    null,
+                    {name: 'undo', className: 'btn-grey'},
+                    {name: 'redo', className: 'btn-grey'}
+                ],
+            'wysiwyg': {
+                fileUploadError: showErrorAlert
+            }
+        }).prev().addClass('wysiwyg-style2');
+
+
+        /**
+         //make the editor have all the available height
+         $(window).on('resize.editor', function() {
+		var offset = $('#editor1').parent().offset();
+		var winHeight =  $(this).height();
+
+		$('#editor1').css({'height':winHeight - offset.top - 10, 'max-height': 'none'});
+	}).triggerHandler('resize.editor');
+         */
+
+
+        $('#editor2').css({'height': '200px'}).ace_wysiwyg({
+            toolbar_place: function (toolbar) {
+                return $(this).closest('.widget-box')
+                    .find('.widget-header').prepend(toolbar)
+                    .find('.wysiwyg-toolbar').addClass('inline');
+            },
+            toolbar:
+                [
+                    'bold',
+                    {name: 'italic', title: 'Change Title!', icon: 'ace-icon fa fa-leaf'},
+                    'strikethrough',
+                    null,
+                    'insertunorderedlist',
+                    'insertorderedlist',
+                    null,
+                    'justifyleft',
+                    'justifycenter',
+                    'justifyright'
+                ],
+            speech_button: false
+        });
+
+
+        $('[data-toggle="buttons"] .btn').on('click', function (e) {
+            var target = $(this).find('input[type=radio]');
+            var which = parseInt(target.val());
+            var toolbar = $('#editor1').prev().get(0);
+            if (which >= 1 && which <= 4) {
+                toolbar.className = toolbar.className.replace(/wysiwyg\-style(1|2)/g, '');
+                if (which == 1) $(toolbar).addClass('wysiwyg-style1');
+                else if (which == 2) $(toolbar).addClass('wysiwyg-style2');
+                if (which == 4) {
+                    $(toolbar).find('.btn-group > .btn').addClass('btn-white btn-round');
+                } else $(toolbar).find('.btn-group > .btn-white').removeClass('btn-white btn-round');
+            }
+        });
+
+
+        //RESIZE IMAGE
+
+        //Add Image Resize Functionality to Chrome and Safari
+        //webkit browsers don't have image resize functionality when content is editable
+        //so let's add something using jQuery UI resizable
+        //another option would be opening a dialog for user to enter dimensions.
+        if (typeof jQuery.ui !== 'undefined' && ace.vars['webkit']) {
+
+            var lastResizableImg = null;
+
+            function destroyResizable() {
+                if (lastResizableImg == null) return;
+                lastResizableImg.resizable("destroy");
+                lastResizableImg.removeData('resizable');
+                lastResizableImg = null;
+            }
+
+            var enableImageResize = function () {
+                $('.wysiwyg-editor')
+                    .on('mousedown', function (e) {
+                        var target = $(e.target);
+                        if (e.target instanceof HTMLImageElement) {
+                            if (!target.data('resizable')) {
+                                target.resizable({
+                                    aspectRatio: e.target.width / e.target.height,
+                                });
+                                target.data('resizable', true);
+
+                                if (lastResizableImg != null) {
+                                    //disable previous resizable image
+                                    lastResizableImg.resizable("destroy");
+                                    lastResizableImg.removeData('resizable');
+                                }
+                                lastResizableImg = target;
+                            }
+                        }
+                    })
+                    .on('click', function (e) {
+                        if (lastResizableImg != null && !(e.target instanceof HTMLImageElement)) {
+                            destroyResizable();
+                        }
+                    })
+                    .on('keydown', function () {
+                        destroyResizable();
+                    });
+            }
+
+            enableImageResize();
+
+            /**
+             //or we can load the jQuery UI dynamically only if needed
+             if (typeof jQuery.ui !== 'undefined') enableImageResize();
+             else {//load jQuery UI if not loaded
+			//in Ace demo ./components will be replaced by correct componsents path
+			$.getScript("assets/js/jquery-ui.custom.min.js", function(data, textStatus, jqxhr) {
+				enableImageResize()
+			});
+		}
+             */
+        }
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    function SubmitStep()
+    {
+        SubmitForm();
+    }
+
+
+
+    function SubmitForm1() {
+        try {
+            $('#create_course_form').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                ignore: '',
+                rules: {
+                    start_date: {
+                        required: true,
+                    },
+                    end_date: {
+                        required: true,
+                    },
+                    import_file: {
+                        required: true,
+                    },
+                    target_term: {
+                        required: true,
+                    },
+                },
+                messages: {
+                    start_date: {
+                        required: '必須項目です。',
+                    },
+                    end_date: {
+                        required: '必須項目です。',
+                    },
+                    import_file: {
+                        required: '必須項目です。',
+                    },
+                    target_term: {
+                        required: '必須項目です。',
+                    },
+                },
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error');
+                    $(e).remove();
+                },
+                errorPlacement: function (error, element) {
+                    if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                        var controls = element.closest('div[class*="col-"]');
+                        if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                        else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                    }
+                    else if (element.is('.select2')) {
+                        error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                    }
+                    else if (element.is('.chosen-select')) {
+                        error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                    }
+                    else if (element.parent().prop('tagName') == 'TD') {
+                        error.insertAfter(element);
+                    }
+                    else {
+                        error.insertAfter(element);
+                    }
+                },
+                submitHandler: function (form) {
+                    form.submit();
+                },
+                invalidHandler: function (form) {
+                }
+            });
+        } catch (e) {
+            alert(e);
+
+        }
+    }
+</script>
+
+
+
+{% endblock content %}

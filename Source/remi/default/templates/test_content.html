@@ -1,0 +1,1079 @@
+{% extends "course_base.html" %}
+{% load gacoitags %}
+{% block content %}
+{% load static %}
+
+<form name='formFilter' action="/courses" style="height:75vh;width:100%;">
+    <input type='hidden' value='{{ test_id}}' name='test_id'>
+    <!--<input type='hidden' value='{{ next_question }}' name='next_question'>-->
+    <input type='hidden' value='{{ correct_question }}' name='correct_question'>
+    <input type='hidden' value='{{ total_question }}' name='total_question'>
+    <input type='hidden' value='{{ current_lesson }}' name='current_lesson'>
+    <input type='hidden' value='{{ question_goal }}' name='question_goal'>
+    <input type='hidden' value='{{ percent_goal }}' name='percent_goal'>
+    <input type='hidden' value='' name="current_options">
+    <!-- For type 4 only banana -->
+    <input type='hidden' value='' name='answer_type4'>
+    <!--End for type 4-->
+    <input type='hidden' value="{% static  '' %}" name='root_url'>
+    <input type='hidden' value='{{ current_test_type }}' name='current_test_type'>
+    <!--For type 2 and 3,4-->
+    <input type='hidden' value='0' id='current_question' name='option_run_out'>
+    <input type="hidden" value="0" id="timeout_state" name="timeout_state">
+    <!--For all Type -->
+    <input type='hidden' value='' id="timeout" name="timeout">
+
+
+
+    <div class="row" hidden>
+        <audio class="audio-player" id="audio-finished-beep" controls >
+            <source  class="audio-source" src="/static/audio/finished_test/beep.mp3">
+        </audio>
+    </div>
+
+
+    <div class="questions" style="height:100%;width:100%;">
+        <div class="question-header">
+            <a href="/course_list" style="height:100%;width:10%;float:right;margin-right: 10px;">
+                <div class="close-button" style="height:100%">
+                    <button type="button" class="close" style="height:100%" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </a>
+        </div>
+
+        <div class="question" align="center">
+            <div class="question-content" id="question-content"  align="center">
+
+
+            </div>
+            <div class="answer-content" id="answer-content">
+
+
+                <div class="row" id="answer-row-1" style="height: 35vh;width:100%;">
+
+                </div>
+                <div class="row" id="answer-row-2" style="height:35vh;width:100%;">
+
+                </div>
+            </div>
+        </div>
+        <div align="right"><h1 id="time" align="center" class="blue" style="width: 20%; border-color: #00BE67"  ></h1></div>
+    </div>
+
+</form>
+
+<style>
+    .question-header
+    {
+        height:7%;
+        width:100%;
+        border-style: initial;
+        border-bottom:1px inset;
+    }
+    .question-content
+    {
+        height:86%;
+        width:100%;
+        border-style: unset;
+        border-bottom:1px inset;
+    }
+    .question-content-audio
+    {
+        height: 15%;
+        width:100%;
+
+    }
+    .question-content-question
+    {
+        height: 85%;
+        width:100%;
+    }
+
+</style>
+<!--RENDER QUESTION TYPE 1-->
+<script type="text/javascript">
+    function loadOptionsDictType1(event, total_question, right_question, current_question) {
+        var form = document.forms["formFilter"];
+        form['correct_question'].value = right_question;
+        form['total_question'].value = total_question;
+        var test_id = form['test_id'].value;
+        if (event != 0)
+        {
+            if (parseInt(form['current_options'].value) == 4)
+            {
+                event.parentNode.children[1].className = 'overlay-type-1';
+
+            }
+            else
+            {
+                event.parentNode.children[1].className = 'overlay-type-1';
+
+            }
+
+        }
+        setTimeout(function () {
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        $.getJSON(url, function(result) {
+            var option_dict = result['data'];
+            var option_list = option_dict['options'];
+            var options_number = result['options_number'];
+            form['current_options'].value = options_number;
+            current_question = result['current_question'];
+            $('#answer-row-1').empty();
+            $('#answer-row-2').empty();
+            $('#question-content').empty();
+
+            console.log(current_question);
+            for (var i = 0; i < options_number; i++) {
+                var backgroundColors = ['green', 'blue', 'red', 'yellow']
+                var backgroundColor = backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
+                var right = option_list[i]["right"];
+                var image_url = option_list[i]["url"];
+                var src = form['root_url'].value + image_url;
+                var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
+                var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+                var row_index = 2;
+                if (i < options_number/2) {
+                    row_index = 1
+                }
+                var onclickFunction = "loadOptionsDictType1(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
+                var rightClass = "not-right-class";
+                var image_src = failed_image_src;
+                if (right == 1) {
+                    image_src = right_image_src;
+                    rightClass = "right-class";
+                    onclickFunction = "loadOptionsDictType1(this," + String(total_question + 1) + "," + String(right_question + 1) + "," + String(current_question) + ")"
+                }
+                if (options_number == 6) {
+                     if(i%3 ==0)
+                    {
+                        $('#answer-row-' + row_index).append('<div class="col-sm-1" style="width: 10vh;height:100%"></div>');
+                    }
+                    $('#answer-row-' + row_index).append(
+                        '<div class="col-sm-3 '+ rightClass +'" style="height:100%;width:35vh;background-color:'+  backgroundColor +'">' +
+                        '<img class="img-thumbnail img-rounded hidden-xs fixed-width-type-1 " onclick="' + onclickFunction + '" src="' + src + '" width="70%" height="70%" alt=""/>' +
+                        '<img class="overlay-type-1 hidden" src="' + image_src + '"/>' +
+                        '</div>'
+                    );
+
+//                    $('#answer-row-' + row_index).css('height':)
+                }
+                else {
+                    if(i%2==0)
+                    {
+                        $('#answer-row-' + row_index).append('<div class="col-sm-1" style="width: 27vh;height:100%"></div>');
+                    }
+                    $('#answer-row-' + row_index).append(
+                        '<div class="col-sm-3 '+ rightClass +'" style="height:100%;width:35vh;background-color: '+  backgroundColor +'">' +
+                        '<img class="img-thumbnail hidden-xs fixed-width-type-1 " onclick="' + onclickFunction + '" src="' + src + '" width="50%" height="50%" alt=""/>' +
+                        '<img class="overlay-type-1 hidden" src="' + image_src + '"/>' +
+                        '</div>'
+                    );
+
+                }
+            }
+
+            var audio_url = form['root_url'].value + option_dict['questions_url'];
+            $('#question-content').append(
+                '<div class="row" style="height:50%;width:100%;" hidden> \n' +
+                '       <audio class="audio-player" controls autoplay > \n' +
+                '           <source class="audio-source" src="'+ audio_url +'"> \n' +
+                '       </audio> \n' +
+                ' </div>')
+//            $('.audio-player')[0].load();
+//            $('.audio-player')[0].play();
+        })
+//            + autoplay
+            }, 200);
+        return true;
+    }
+</script>
+<!--RENDER QUESTION TYPE 2-->
+<script type="text/javascript">
+
+    function loadOptionsDictType2(ev, total_question, right_question, current_question) {
+
+        var form = document.forms["formFilter"];
+
+        console.log(total_question);
+        form['total_question'].value = total_question;
+        var test_id = form['test_id'].value;
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        var current_right_question = form['correct_question'].value;
+        if (ev != 0 )
+        {
+            if (parseInt(current_right_question) < parseInt(right_question))
+            {
+                ev.className = "overlay-audio btn btn-success btn-sm";
+
+            }
+            else
+            {
+                ev.className = "overlay-audio btn btn-danger btn-sm";
+
+            }
+        }
+        form['correct_question'].value = right_question;
+        setTimeout(function () {
+            $('#answer-content').empty();
+            $('#question-content').empty();
+        },200)
+
+
+        setTimeout(function () {
+            $.getJSON(url, function (result) {
+                $('#answer-content').empty();
+                $('#question-content').empty();
+                option_dict = result['data'];
+                var option_list = option_dict['options'];
+                options_number = result['options_number'];
+                current_question = result['current_question'];
+                form['current_question'].value = current_question;
+                var src = form['root_url'].value + option_dict['questions_url'];
+                $('#question-content').append(
+                    '<div class="">' +
+                    '<img class="img-thumbnail hidden-xs fixed_type_23" src="' + src + '" width="100%" height="70%" alt=""/>' +
+                    '</div>'
+                );
+                var option_labels = ["A", "B", "C", "D"];
+                var audio_class_list = [];
+                for (var i = 0; i < options_number; i++) {
+                    var backgroundColors = ['green', 'blue', 'red', 'yellow'];
+                    var backgroundColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+                    console.log(backgroundColor);
+                    var right = option_list[i]["right"];
+                    var option_src = option_list[i]["url"];
+                    var src = form['root_url'].value + option_src;
+                    var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
+                    var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+
+                    var onclickFunction = "loadOptionsDictType2(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
+                    var rightClass = "not-right-class";
+                    var image_src = failed_image_src;
+
+                    if (right == 1) {
+                        image_src = right_image_src;
+                        rightClass = "right-class";
+                        onclickFunction = "loadOptionsDictType2(this," + String(total_question + 1) + "," + String(right_question + 1) + "," + String(current_question) + ")"
+                    }
+                    $('#answer-content').append(
+                        '<br/>' +
+                        '<div class="row" style="height:50%;width:100%;">\n' +
+                        '      <div class="overlay-audio btn btn-white btn-primary" id="overlay-audio-player-' + i + '" onclick="' + onclickFunction + '">' + option_labels[i] + '</div>' +
+                        '       <audio class="audio-player-' + i + '" id="audio-player-' + i + '"  controls hidden>\n' +
+                        '           <source class="audio-source" src="' + src + '">\n' +
+                        '       </audio>\n' +
+                        ' </div>')
+                    audio_class_list.push("audio-player-" + String(i));
+                }
+                playAudioListSyncType2(audio_class_list);
+            });
+        }, 300);
+        return true;
+    }
+</script>
+<script>
+    function playAudioListSyncType2(audio_list) {
+        var form = document.forms["formFilter"];
+        if(parseInt(form['timeout_state'].value) == 1)
+        {
+            return;
+        }
+        if (audio_list.length == 0)
+        {
+            var form = document.forms["formFilter"];
+            right_question = parseInt(form['correct_question'].value);
+            total_question = parseInt(form['total_question'].value);
+            current_question  = parseInt(form['current_question'].value);
+            loadOptionsDictType2(0, total_question + 1, right_question, current_question);
+            return;
+        }
+        else
+        {
+            var audio = document.getElementById(audio_list[0]);
+//          $('#overlay-'+ audio_list[0]).css("border", "solid red 1px");
+            audio.load();
+           //  $('#overlay-'+ audio_list[0]).css("background-color", "red");
+            $('#overlay-'+ audio_list[0]).removeClass("btn-primary");
+            $('#overlay-'+ audio_list[0]).removeClass("btn-white");
+            $('#overlay-'+ audio_list[0]).addClass("btn-white btn-danger btn-sm");
+            audio.play();
+            audio.onended = function() {
+//          $('#overlay-'+ audio_list[0]).css("border", "solid blue 1px");
+            console.log(audio);
+            setTimeout(function () {
+                $('#overlay-'+ audio_list[0]).removeClass("btn-danger");
+                $('#overlay-'+ audio_list[0]).addClass("btn-white");
+                $('#overlay-'+ audio_list[0]).addClass("btn-primary");
+               audio_list.splice(0, 1);
+               playAudioListSyncType2(audio_list)
+            }, 100);
+            };
+        }
+    }
+
+</script>
+
+
+<!--RENDER QUESTION TYPE 3-->
+<script type="text/javascript">
+
+    function loadOptionsDictType3(ev, total_question, right_question, current_question) {
+
+        var form = document.forms["formFilter"];
+
+        console.log(total_question);
+        form['total_question'].value = total_question;
+        var test_id = form['test_id'].value;
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        var current_right_question = form['correct_question'].value;
+        if (ev != 0 )
+        {
+            if (parseInt(current_right_question) < parseInt(right_question))
+            {
+                ev.className = "overlay-audio btn btn-success btn-sm";
+
+            }
+            else
+            {
+                ev.className = "overlay-audio btn btn-danger btn-sm";
+
+            }
+        }
+        form['correct_question'].value = right_question;
+        setTimeout(function () {
+            $('#answer-content').empty();
+            $('#question-content').empty();
+        },200)
+
+
+        setTimeout(function () {
+            $.getJSON(url, function (result) {
+                $('#answer-content').empty();
+                $('#question-content').empty();
+                option_dict = result['data'];
+                var question_audio_url = option_dict['question_audio_url'];
+                var option_list = option_dict['options'];
+                options_number = result['options_number'];
+                current_question = result['current_question'];
+                form['current_question'].value = current_question;
+                var image_src = form['root_url'].value + option_dict['questions_url'];
+                    $('#question-content').append(
+                        '<div class="">' +
+                        '<img class="img-thumbnail hidden-xs fixed_type_23" src="' + image_src + '" width="100%" height="70%" alt=""/>' +
+                        '</div>'
+                    );
+
+                $('#answer-content').append(
+                        '<br/>' +
+                        '<div class="row" style="height:50%;width:100%;">\n' +
+                        '       <audio class="audio-player-question" id="audio-player-question"  controls hidden>\n' +
+                        '           <source class="audio-source" src="' + form['root_url'].value + question_audio_url + '">\n' +
+                        '       </audio>\n' +
+                        ' </div>');
+                var audio = document.getElementById("audio-player-question");
+                audio.load();
+                audio.play();
+                audio.onended = function () {
+
+
+                    var option_labels = ["A", "B", "C", "D"];
+                    var audio_class_list = [];
+                    for (var i = 0; i < options_number; i++) {
+                        var backgroundColors = ['green', 'blue', 'red', 'yellow'];
+                        var backgroundColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+                        console.log(backgroundColor);
+                        var right = option_list[i]["right"];
+                        var option_src = option_list[i]["url"];
+                        var src = form['root_url'].value + option_src;
+                        var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
+                        var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+
+                        var onclickFunction = "loadOptionsDictType3(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
+                        var rightClass = "not-right-class";
+                        var image_src = failed_image_src;
+
+                        if (right == 1) {
+                            image_src = right_image_src;
+                            rightClass = "right-class";
+                            onclickFunction = "loadOptionsDictType3(this," + String(total_question + 1) + "," + String(right_question + 1) + "," + String(current_question) + ")"
+                        }
+                        $('#answer-content').append(
+                            '<br/>' +
+                            '<div class="row" style="height:50%;width:100%;">\n' +
+                            '      <div class="overlay-audio btn btn-white btn-primary" id="overlay-audio-player-' + i + '" onclick="' + onclickFunction + '">' + option_labels[i] + '</div>' +
+                            '       <audio class="audio-player-' + i + '" id="audio-player-' + i + '"  controls hidden>\n' +
+                            '           <source class="audio-source" src="' + src + '">\n' +
+                            '       </audio>\n' +
+                            ' </div>')
+                        audio_class_list.push("audio-player-" + String(i));
+                    }
+                    playAudioListSyncType3(audio_class_list);
+                }
+            });
+        }, 300);
+
+        return true;
+    }
+</script>
+<script>
+    function playAudioListSyncType3(audio_list) {
+        var form = document.forms["formFilter"];
+        if(parseInt(form['timeout_state'].value) == 1)
+        {
+            return;
+        }
+        if (audio_list.length == 0)
+        {
+            var form = document.forms["formFilter"];
+            right_question = parseInt(form['correct_question'].value);
+            total_question = parseInt(form['total_question'].value);
+            current_question  = parseInt(form['current_question'].value);
+            loadOptionsDictType3(0, total_question + 1, right_question, current_question);
+            return;
+        }
+        else
+        {
+            var audio = document.getElementById(audio_list[0]);
+//          $('#overlay-'+ audio_list[0]).css("border", "solid red 1px");
+            audio.load();
+           //  $('#overlay-'+ audio_list[0]).css("background-color", "red");
+            $('#overlay-'+ audio_list[0]).removeClass("btn-primary");
+            $('#overlay-'+ audio_list[0]).removeClass("btn-white");
+            $('#overlay-'+ audio_list[0]).addClass("btn-white btn-danger btn-sm");
+            audio.play();
+            audio.onended = function() {
+//          $('#overlay-'+ audio_list[0]).css("border", "solid blue 1px");
+            console.log(audio);
+            setTimeout(function () {
+                $('#overlay-'+ audio_list[0]).removeClass("btn-danger");
+                $('#overlay-'+ audio_list[0]).addClass("btn-white");
+                $('#overlay-'+ audio_list[0]).addClass("btn-primary");
+               audio_list.splice(0, 1);
+               playAudioListSyncType3(audio_list)
+            }, 100);
+            };
+        }
+    }
+
+</script>
+
+<!--RENDER QUESTION TYPE 5-->
+<script>
+function loadOptionsDictType5(event, total_question, right_question, current_question) {
+        var form = document.forms["formFilter"];
+        var current_right_question = form['correct_question'].value;
+        if (current_right_question == right_question)
+        {
+            event.className = "answer options btn btn-danger";
+
+        }
+        else
+        {
+            event.className = "answer options btn btn-success";
+        }
+        form['correct_question'].value = right_question;
+        console.log(total_question);
+        form['total_question'].value = total_question;
+        var test_id = form['test_id'].value;
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        setTimeout(function () {
+            $.getJSON(url, function (result) {
+                $('#answer-content').empty();
+                $('#question-content').empty();
+                var option_dict = result['data'];
+                var option_list = option_dict['options'];
+                var options_number = result['options_number'];
+                current_question = result['current_question'];
+                form['current_question'].value = current_question;
+
+                var src = form['root_url'].value + option_dict['questions_url'];
+                $('#question-content').append(
+                    '<div class="alert alert-info" style="height:100%;width:80;margin-bottom: 0px">' +
+                    '   <div><h3>'+ option_dict['question'] + '</h3></div>'+
+                    '</div>'+
+                        '<br/>'+
+                        '<br/>'
+                );
+               //   var option_labels = ["A", "B", "C", "D"];
+                var audio_class_list = [];
+                for (var i = 0; i < options_number; i++) {
+                    var backgroundColors = ['green', 'blue', 'red', 'yellow'];
+                    var backgroundColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+                    console.log(backgroundColor);
+                    var right = option_list[i]["right"];
+
+                    var onclickFunction = "loadOptionsDictType5(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
+                    var rightClass = "not-right-class";
+                   //  var image_src = failed_image_src;
+                    var background = "red";
+                    if (right == 1) {
+                 //        image_src = right_image_src;
+                        rightClass = "right-class";
+                        onclickFunction = "loadOptionsDictType5(this," + String(total_question + 1) + "," + String(right_question + 1) + "," + String(current_question) + ")"
+                        background = "green";
+                    }
+                    $('#answer-content').append(
+                        '<div class="row" style="width: 300px;height: 50px">\n' +
+                        '      <div class="btn btn-white btn-primary" style="width: 100%" id="" onclick="' + onclickFunction + '">' + option_list[i]['content'] + '</div>' +
+                        '</div>')
+                }
+            });
+        }, 500);
+        return true;
+    }
+</script>
+
+<!--RENDER QUESTION TYPE 4-->
+<script>
+function loadOptionsDictType4(total_question, right_question, current_question) {
+
+        var form = document.forms["formFilter"];
+        var current_right_question = right_question;
+        form['total_question'].value = total_question;
+        if (total_question != 0)
+        {
+            // var user_input = $('#user-input').value;
+            var user_input = document.getElementById("user-input").value;
+            var answer = form['answer_type4'].value;
+            if (user_input.toUpperCase().trim() == answer.toUpperCase().trim())
+            {
+                current_right_question = right_question + 1;
+            }
+        }
+
+        var test_id = form['test_id'].value;
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        setTimeout(function () {
+            $.getJSON(url, function (result) {
+                $('#answer-content').empty();
+                $('#question-content').empty();
+                var option_dict = result['data'];
+                form['answer_type4'].value = option_dict['answer'];
+
+                var audio_url = form['root_url'].value + option_dict['question'];
+
+                $('#question-content').append(
+                '<div class="row" style="height:10vh;width:100%;"> \n' +
+                '       <audio class="audio-player" controls autoplay > \n' +
+                '           <source class="audio-source" src="'+ audio_url +'"> \n' +
+                '       </audio> \n' +
+                ' </div>');
+
+                form['correct_question'].value = current_right_question;
+                current_question = result['current_question'];
+                form['current_question'].value = current_question;
+                var current_total_question = total_question + 1;
+                form['total_question'].value = current_total_question;
+                var onclick = "loadOptionsDictType4(" + String(current_total_question) + ", " + String(current_right_question)+ ", " + String(current_question)+ ")";
+                $('#answer-content').append(
+                    '<div><textarea type="text" id="user-input" autofocus style="font: 50px arial, sans-serif;line-height: 100px;text-align: center;width:40%" onkeypress="return handleEnterKeyboard(event)"> ' +
+                    '</textarea></div>'+
+                    '<div><div class="btn btn-primary" onclick="'+ onclick +'" >Enter</div> </div>'
+                )
+            });
+        }, 500);
+        return true;
+    }
+function handleEnterKeyboard(event)
+{
+    if (event.keyCode == 13)
+    {
+        var form = document.forms["formFilter"];
+        var total_question = parseInt(form['total_question'].value);
+        var right_question = parseInt(form['correct_question'].value);
+        var current_question = parseInt(form['current_question'].value);
+        loadOptionsDictType4(total_question, right_question, current_question);
+        return false;
+    }
+}
+
+</script>
+
+<script>
+    $(document).ready(function() {
+        var form = document.forms["formFilter"];
+            form['timeout_state'].value = 0;
+        $('#timeout').on('change', function () {
+            $('#timeout').hide();
+            var form = document.forms["formFilter"];
+            form['timeout_state'].value = 1;
+            var right_question = form['correct_question'].value;
+            var total_question = form['total_question'].value;
+            var test_id = form['test_id'].value;
+            var current_lesson = form['current_lesson'].value;
+            var question_goal = form['question_goal'].value;
+            var percent_goal = form['percent_goal'].value;
+            var url = String.format("/test_content?finished=true&test_id={0}&right_question={1}" +
+                "&total_question={2}&current_lesson={3}&question_goal={4}&percent_goal={5}",
+                test_id, right_question, total_question, current_lesson, question_goal, percent_goal);
+            $.getJSON(url, function (result) {
+                $('#time').remove();
+                $('#timeout').remove();
+                $('#question-content').remove();
+                $('#answer-content').remove();
+
+                $('#audio-finished-beep')[0].load();
+                $('#audio-finished-beep')[0].play();
+
+                $('#audio-finished-beep')[0].onended = function () {
+                var rightNumber = result['right_number'];
+                var percent = result['percent'];
+                if (result['result']) {
+
+                    var message = "\n" + "Quantity: " + String(rightNumber) + "-" + "Quality: " + String(percent) +"% \n"
+
+                    bootbox.dialog({
+                        closeOnEscape: false,
+                        message: message,
+                        buttons: {
+                            "success": {
+                            "label": "OK",
+                            "className": "btn-sm btn-primary",
+                            callback: function () {
+                                document.location.href = '/courses/?part=' + String(current_lesson);
+                                }
+                            }
+                        }
+                    });
+
+                }
+                else {
+                    var message =  "\n" + "Quantity: " + String(rightNumber) + " - " + "Quality: " + String(percent) +"% \n";
+                    bootbox.dialog({
+                        closeOnEscape: false,
+                        message: message,
+                        buttons: {
+                            "success": {
+                            "label": "OK",
+                            "className": "btn-sm btn-primary",
+                            callback: function () {
+                                document.location.href = '/courses/?part=' + String(current_lesson);
+                                }
+                            }
+                        }
+                    });
+
+                }
+             }
+                });
+        });
+
+    })
+</script>
+<script>
+    function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = duration;
+            $('#timeout').val('change').trigger('change');
+        }
+     }, 1000);
+   }
+
+    window.onload = function () {
+        var countDownTime = 30;
+        display = document.querySelector('#time');
+        startTimer(countDownTime, display);
+};
+
+</script>
+
+<!--RENDER QUESTION TYPE 6-->
+<script>
+function loadOptionsDictType6(event, total_question, right_question, current_question) {
+
+        var form = document.forms["formFilter"];
+
+        var current_right_question = form['correct_question'].value;
+        if (current_right_question == right_question)
+        {
+            event.className = "answer options btn btn-danger";
+
+        }
+        else
+        {
+            event.className = "answer options btn btn-success";
+        }
+        form['correct_question'].value = right_question;
+        console.log(total_question);
+        form['total_question'].value = total_question;
+        var test_id = form['test_id'].value;
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        setTimeout(function () {
+            $.getJSON(url, function (result) {
+                $('#answer-content').empty();
+                $('#question-content').empty();
+                var option_dict = result['data'];
+
+                current_question = result['current_question'];
+                form['current_question'].value = current_question;
+
+                var image_url = form['root_url'].value + option_dict['image_url']
+                var image_hint_url = form['root_url'].value + option_dict['image_hint_url'];
+                var audio_url = form['root_url'].value + option_dict['audio_url'];
+                $('#question-content').append(
+                        '<div class="">' +
+                        '<img class="img-thumbnail hidden-xs fixed_type_23" src="' + image_url + '" width="100%" height="70%" alt=""/>' +
+                        '</div>'
+                    );
+                $('#question-content').append(
+                        '<br/>' +
+                        '<div class="row" style="height:50%;width:100%;">\n' +
+                        '       <audio class="audio-player-question" id="audio-player-question"  controls hidden>\n' +
+                        '           <source class="audio-source" src="' + audio_url + '">\n' +
+                        '       </audio>\n' +
+                        ' </div>');
+                 $('#answer-content').append(
+                        '<div class="">' +
+                        '<img class="img-thumbnail hidden-xs fixed-image-hint" src="' + image_hint_url + '" width="100%" height="20%" alt=""/>' +
+                        '</div>'
+                    );
+                var audio = document.getElementById("audio-player-question");
+
+                audio.load();
+                audio.play();
+                audio.onended = function () {
+                    setTimeout(function () {
+                        loadOptionsDictType6(this,(total_question + 1),String(total_question + 1), String(current_question));
+                    }, 2000);
+                }
+            });
+        }, 500);
+        return true;
+    }
+
+
+
+</script>
+
+<!--RENDER QUESTION TYPE 7-->
+<script>
+function loadOptionsDictType7(event, total_question, right_question, current_question) {
+
+        var form = document.forms["formFilter"];
+
+        var current_right_question = form['correct_question'].value;
+        if (current_right_question == right_question)
+        {
+            event.className = "answer options btn btn-danger";
+
+        }
+        else
+        {
+            event.className = "answer options btn btn-success";
+        }
+        form['correct_question'].value = right_question;
+        console.log(total_question);
+        form['total_question'].value = total_question;
+        var test_id = form['test_id'].value;
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        setTimeout(function () {
+            $.getJSON(url, function (result) {
+                $('#answer-content').empty();
+                $('#question-content').empty();
+                var option_dict = result['data'];
+                current_question = result['current_question'];
+                form['current_question'].value = current_question;
+                var image_hint_url = form['root_url'].value + option_dict['image_hint_url'];
+                var video_url = form['root_url'].value + option_dict['video_url'];
+                $('#question-content').append(' <div class="video-content" style="height:80%;"  >' +
+                    '<div align="center" style="height:100%; width: 100%"> ' +
+                    '<video style="height:100%;width:70%; "  id="video-leson" autoplay>' +
+                    '<source src="'+ video_url +'"/> </video>' +
+                    '</div></div>');
+                $('#answer-content').append(
+                        '<div class="">' +
+                        '<img class="img-thumbnail hidden-xs fixed-image-hint" src="' + image_hint_url + '" width="100%" height="20%" alt=""/>' +
+                        '</div>'
+                    );
+                document.getElementById('video-leson').addEventListener('ended',function () {
+                        setTimeout(function () {
+                            loadOptionsDictType7(this,(total_question + 1),String(total_question + 1), String(current_question));
+                        }, 2000);
+                });
+            }, 500);
+            return true;
+            },false);
+    }
+
+
+
+</script>
+
+
+<!--RENDER QUESTION TYPE 2-->
+<script type="text/javascript">
+
+    function loadOptionsDictType8(ev, total_question, right_question, current_question) {
+
+        var form = document.forms["formFilter"];
+
+        console.log(total_question);
+        form['total_question'].value = total_question;
+        var test_id = form['test_id'].value;
+        var url = String.format("/test_content?is_json=true&test_id={0}&current_question={1}", test_id, current_question);
+        var current_right_question = form['correct_question'].value;
+        if (ev != 0 )
+        {
+            if (parseInt(current_right_question) < parseInt(right_question))
+            {
+                ev.className = "overlay-audio btn btn-success btn-sm";
+
+            }
+            else
+            {
+                ev.className = "overlay-audio btn btn-danger btn-sm";
+
+            }
+        }
+        form['correct_question'].value = right_question;
+        setTimeout(function () {
+            $('#answer-content').empty();
+            $('#question-content').empty();
+        },200)
+
+
+        setTimeout(function () {
+            $.getJSON(url, function (result) {
+                $('#answer-content').empty();
+                $('#question-content').empty();
+                option_dict = result['data'];
+                var option_list = option_dict['options'];
+                options_number = result['options_number'];
+                current_question = result['current_question'];
+                form['current_question'].value = current_question;
+                var src = form['root_url'].value + option_dict['questions_url'];
+
+                $('#question-content').append(' <div class="video-fixed-type-8" >' +
+                    '<video style="height:100%;width:70%; "  id="video-leson" autoplay>' +
+                    '<source src="' + src + '"/> </video>' +
+                    '</div>');
+                document.getElementById('video-leson').addEventListener('ended', function () {
+                    var option_labels = ["A", "B", "C", "D"];
+                    var audio_class_list = [];
+                    for (var i = 0; i < options_number; i++) {
+                        var backgroundColors = ['green', 'blue', 'red', 'yellow'];
+                        var backgroundColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+                        console.log(backgroundColor);
+                        var right = option_list[i]["right"];
+                        var option_src = option_list[i]["url"];
+                        var src = form['root_url'].value + option_src;
+                        var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
+                        var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+
+                        var onclickFunction = "loadOptionsDictType8(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
+                        var rightClass = "not-right-class";
+                        var image_src = failed_image_src;
+
+                        if (right == 1) {
+                            image_src = right_image_src;
+                            rightClass = "right-class";
+                            onclickFunction = "loadOptionsDictType8(this," + String(total_question + 1) + "," + String(right_question + 1) + "," + String(current_question) + ")"
+                        }
+                        $('#answer-content').append(
+                            '<br/>' +
+                            '<div class="row" style="height:50%;width:100%;">\n' +
+                            '      <div class="overlay-audio btn btn-white btn-primary" id="overlay-audio-player-' + i + '" onclick="' + onclickFunction + '">' + option_labels[i] + '</div>' +
+                            '       <audio class="audio-player-' + i + '" id="audio-player-' + i + '"  controls hidden>\n' +
+                            '           <source class="audio-source" src="' + src + '">\n' +
+                            '       </audio>\n' +
+                            ' </div>')
+                        audio_class_list.push("audio-player-" + String(i));
+                    }
+                    playAudioListSyncType8(audio_class_list);
+                });
+            });
+        }, 300);
+        return true;
+    }
+
+
+
+    function playAudioListSyncType8(audio_list) {
+        var form = document.forms["formFilter"];
+        if(parseInt(form['timeout_state'].value) == 1)
+        {
+            return;
+        }
+        if (audio_list.length == 0)
+        {
+            var form = document.forms["formFilter"];
+            right_question = parseInt(form['correct_question'].value);
+            total_question = parseInt(form['total_question'].value);
+            current_question  = parseInt(form['current_question'].value);
+            loadOptionsDictType8(0, total_question + 1, right_question, current_question);
+            return;
+        }
+        else
+        {
+            var audio = document.getElementById(audio_list[0]);
+            audio.load();
+            $('#overlay-'+ audio_list[0]).removeClass("btn-primary");
+            $('#overlay-'+ audio_list[0]).removeClass("btn-white");
+            $('#overlay-'+ audio_list[0]).addClass("btn-white btn-danger btn-sm");
+            audio.play();
+            audio.onended = function() {
+            console.log(audio);
+            setTimeout(function () {
+                $('#overlay-'+ audio_list[0]).removeClass("btn-danger");
+                $('#overlay-'+ audio_list[0]).addClass("btn-white");
+                $('#overlay-'+ audio_list[0]).addClass("btn-primary");
+               audio_list.splice(0, 1);
+               playAudioListSyncType8(audio_list)
+            }, 100);
+            };
+        }
+    }
+</script>
+
+
+
+<style>
+    .fixed_type_23
+    {
+        top: 10px;
+        bottom: 10px;
+        right: 40%;
+        height: 35vh;
+        width: 35vh;
+
+    }
+
+    .video-fixed-type-8
+    {
+        top: 10px;
+        bottom: 10px;
+        right: 40%;
+        height: 35vh;
+        width: 70vh;
+    }
+
+    .fixed-image-hint {
+        top: 10px;
+        bottom: 10px;
+        right: 40%;
+        height: 10vh;
+        width: 35vh;
+
+    }
+    /*.fixed_width-4 {*/
+        /*position: absolute;*/
+        /*top: 5vh;*/
+        /*bottom: 5vh;*/
+        /*width: 30vh;*/
+        /*height: 30vh;*/
+        /*right: 5vh;*/
+    /*}*/
+    .fixed-width-type-1 {
+        position: absolute;
+        top: 5vh;
+        bottom: 5vh;
+        right: 5vh;
+        height: 25vh;
+        width: 25vh;
+    }
+
+    .overlay-type-1 {
+        position: absolute;
+        top: 5vh;
+        bottom: 5vh;
+        right: 5vh;
+        height: 25vh;
+        width: 25vh;
+    }
+    .overlay-type-1-6
+    {
+        bottom: 0;
+        /*left: 0;*/
+        position: absolute;
+        right: 20%;
+        top: 0;
+        opacity: 1;
+        height: 200px;
+        width: 60%;
+
+    }
+
+
+    .overlay-audio
+    {
+        /*bottom: 0;*/
+        /*position: absolute;*/
+        /*right: 0;*/
+        /*left: 0;*/
+        /*top: 0;*/
+        height: 80%;
+        width: 40%;
+        /*border: solid blue 1px;*/
+         opacity: 1;
+        }
+
+    .answer.options
+    {
+
+        height: 100%;
+        width: 60%;
+        /*// border: solid blue 1px;*/
+        opacity: 1;
+
+        }
+    /*.answer.options.overlay*/
+    /*{*/
+        /*height: 100px;*/
+        /*width: 60%;*/
+        /*border: solid blue 1px;*/
+        /*opacity: 0.5;*/
+    /*}*/
+
+</style>
+
+<script>
+    $(document).ready(function()
+    {
+        var form = document.forms["formFilter"];
+        var current_test_type = parseInt(form["current_test_type"].value);
+        console.log(current_test_type);
+        switch (current_test_type)
+        {
+            case 1:
+                loadOptionsDictType1(0,0,0,0);
+                break;
+            case 2:
+                loadOptionsDictType2(0,0,0,0);
+                break;
+            case 3:
+                loadOptionsDictType3(0,0,0,0);
+                break;
+            case 4:
+                loadOptionsDictType4(0,0,0,0);
+                break;
+            case 5:
+                loadOptionsDictType5(0,0,0,0);
+                break;
+            case 6:
+                loadOptionsDictType6(0,0,0,0);
+                break;
+            case 7:
+                loadOptionsDictType7(0,0,0,0);
+                break;
+            case 8:
+                loadOptionsDictType8(0,0,0,0);
+                break;
+            default:
+                return;
+        }
+    });
+
+</script>
+{% endblock content %}

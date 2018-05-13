@@ -1,0 +1,54 @@
+pip install requests
+pip install Django
+pip install MySQL-python (python 2.7)
+pip install mysqlclient
+pip install openpyxl
+pip install python-dateutil
+pip install bcrypt
+
+python manage.py migrate sessions
+
+
+python shell
+
+python manage.py shell
+
+python -m django --version
+
+django-admin startproject mysite
+
+python manage.py runserver
+
+python manage.py runserver 0.0.0.0:8000
+
+python manage.py runserver 8080
+
+python manage.py startapp polls
+
+python manage.py makemigrations polls
+
+python manage.py sqlmigrate polls 0001
+
+python manage.py migrate
+
+python manage.py startapp default
+
+# cac buoc de tao file language
+mkdir locale
+django-admin makemessages -l jp
+python manage.py compilemessages -l jp
+from django.utils.translation import ugettext_lazy as _
+
+
+MIDDLEWARE = (
+    'django.middleware.locale.LocaleMiddleware',
+)
+
+http://www.marinamele.com/taskbuster-django-tutorial/internationalization-localization-languages-time-zones
+https://docs.djangoproject.com/en/1.10/topics/i18n/translation/
+https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#gettext-on-windows
+https://docs.djangoproject.com/en/1.10/topics/i18n/
+
+
+pip install requests
+

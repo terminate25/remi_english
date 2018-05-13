@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load gacoitags %}
+
+{% block content %}
+
+
+<div class="row">
+    <div class="col-sm-12">
+
+        <div class="widget-box transparent {% if authType %}collapsed{% endif %}">
+
+
+                {% autoescape off %}
+                {{ typeForm.render_form_begin }}
+
+                {% csrf_token %}
+                {{ typeForm.render_content }}
+
+
+                {{ typeForm.render_form_end }}
+                {{ typeForm.render_script }}
+                {% endautoescape %}
+
+
+        </div><!-- /.widget-box -->
+
+
+    </div>
+
+
+</div>
+
+{% endblock content %}

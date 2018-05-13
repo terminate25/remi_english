@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load gacoitags %}
+{% block content %}
+<div class="row">
+    <div class="with-nav-tabs panel-default">
+    <div class="tab-heading">
+		<ul class="nav nav-tabs">
+			<li class="{{tab1}}">
+				<a data-toggle="tab" href="#maintab">
+					 Courses
+				</a>
+			</li>
+            {% if period_form %}
+			<li class="{{tab2}}">
+				<a data-toggle="tab" href="#detailtab">
+                    {% if fiscal_term %} {{ fiscal_term.name }} {% endif %}
+				</a>
+			</li>
+            {% endif %}
+            {% if lesson_form %}
+            <li class="{{tab3}}">
+				<a data-toggle="tab" href="#lessontab">
+                    {% if level %} {{ level.name }} {% endif %}
+				</a>
+			</li>
+            {%  endif %}
+		</ul>
+	</div>
+    <div class="tab-content">
+        <div class="tab-pane fade {{tab1}} in" id="maintab">
+            {% autoescape off %}
+            {{ term_form.render_form_begin }}
+            {% csrf_token %}
+            {{ term_form.render_content }}
+            {{ term_form.render_form_end }}
+            {{ term_form.render_script }}
+            {% endautoescape %}
+        </div>
+        <div class="tab-pane fade {{tab2}} in" id="detailtab">
+            {% if fiscal_term %}
+                {% autoescape off %}
+                {{ period_form.render_form_begin }}
+                {% csrf_token %}
+                {{ period_form.render_content }}
+                {{ period_form.render_form_end }}
+                {{ period_form.render_script }}
+                {% endautoescape %}
+            {% endif %}
+        </div>
+        <div class="tab-pane fade {{tab3}} in" id="lessontab">
+            {% if level %}
+                {% autoescape off %}
+                {{ lesson_form.render_form_begin }}
+                {% csrf_token %}
+                {{ lesson_form.render_content }}
+                {{ lesson_form.render_form_end }}
+                {{ lesson_form.render_script }}
+                {% endautoescape %}
+            {% endif %}
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+
+
+
+    function gacoiform_search(formname) {
+        document.forms[formname][formname + "_action"].value = 6;
+    }
+</script>
+
+
+
+<script>
+    $('.btn-success').on('click', function(){
+        var formData = new FormData();
+        $.ajax({
+            cache: false,
+            data: formData,
+            contentType: false,
+            dataType: "json",
+            success: function(data){
+                result = data['message'];
+                stop_spinner();
+                bootbox.dialog({
+                    message: result,
+                    buttons: {
+                        "success": {
+                            "label": "OK",
+                            "className": "btn-sm btn-primary",
+                            callback: function () {
+                                window.location.href = '/master/';
+                                }
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    function do_change_password(user_id){
+        var url = "/password/?user_id=" + user_id;
+		var title = "Change password";
+		var dialog = bootbox.dialog({
+			title: title,
+		    message: '<iframe style="width:100%;border: none;" src="'+url+'"></iframe>',
+		});
+		dialog.init(function(){
+		    setTimeout(function(){
+		        dialog.find('.bootbox-body').css('margin','-10px -10px -10px -10px');
+		        height = $(window).height() - 100;
+		        dialog.find('iframe').css("height", height - 150);
+		    }, 1);
+		});
+		return false;
+    }
+</script>
+
+{% endblock content %}

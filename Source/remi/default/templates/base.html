@@ -1,0 +1,432 @@
+{% load static %}
+{% load gacoitags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta charset="utf-8"/>
+    <title>{% appearance_system_name %}</title>
+    <link rel="stylesheet" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}"/>
+    <meta name="description" content="Common form elements and layouts"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'font-awesome/4.5.0/css/font-awesome.min.css' %}"/>
+
+    <!-- page specific plugin styles -->
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.custom.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/chosen.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-datepicker3.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-timepicker.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/daterangepicker.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-colorpicker.min.css' %}"/>
+
+    <!-- text fonts -->
+    <link rel="stylesheet" href="{% static 'css/fonts.googleapis.com.css' %}"/>
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="{% static 'css/ace.min.css' %}" class="ace-main-stylesheet" id="main-ace-style"/>
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="{% static 'css/ace-part2.min.css' %}" class="ace-main-stylesheet"/>
+    <![endif]-->
+    <link rel="stylesheet" href="{% static 'css/ace-skins.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/ace-rtl.min.css' %}"/>
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="{% static 'css/ace-ie.min.css' %}"/>
+    <![endif]-->
+
+    <!-- inline styles related to this page -->
+
+    <!-- ace settings handler -->
+    <script src="{% static 'js/ace-extra.min.js' %}"></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+
+    <!--[if lte IE 8]>
+    <script src="{% static 'js/html5shiv.min.js' %}"></script>
+    <script src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+
+    <!-- basic scripts -->
+
+    <!--[if !IE]> -->
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
+
+    <!-- <![endif]-->
+
+    <!--[if IE]>
+    <script src="assets/js/jquery-1.11.3.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+			if('ontouchstart' in document.documentElement) document.write("<script src='/static/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+    </script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+
+    <!-- page specific plugin scripts -->
+    <script src="/static/js/wizard.min.js"></script>
+    <script src="/static/js/jquery.validate.min.js"></script>
+    <script src="/static/js/jquery-additional-methods.min.js"></script>
+    <script src="/static/js/bootbox.js"></script>
+    <script src="/static/js/jquery.maskedinput.min.js"></script>
+    <script src="/static/js/select2.min.js"></script>
+    <script src="/static/js/bootstrap-datepicker.min.js"></script>
+    <!--<script src="/static/js/bootstrap-datetimepicker.min.js"></script>-->
+    <script src="/static/js/locales/bootstrap-datepicker.ja.js"></script>
+    <script src="/static/js/bootstrap-timepicker.min.js"></script>
+    <script src="/static/js/spin.js"></script>
+
+    <script src="/static/js/jquery-ui.custom.min.js"></script>
+    <script src="/static/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="/static/js/jquery.easypiechart.min.js"></script>
+    <script src="/static/js/jquery.sparkline.index.min.js"></script>
+    <script src="/static/js/jquery.flot.min.js"></script>
+    <script src="/static/js/jquery.flot.pie.min.js"></script>
+    <script src="/static/js/jquery.flot.resize.min.js"></script>
+    <script src="/static/js/plotly-latest.min.js"></script>
+    <script src="/static/js/spin.js"></script>
+    <script src="/static/js/jquery.number.js"></script>
+
+    <script src="/static/js/jquery-ui.custom.min.js"></script>
+	<script src="/static/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="/static/js/markdown.min.js"></script>
+    <script src="/static/js/bootstrap-markdown.min.js"></script>
+    <script src="/static/js/jquery.hotkeys.index.min.js"></script>
+    <script src="/static/js/bootstrap-wysiwyg.min.js"></script>
+    <script src="/static/js/bootbox.js"></script>
+
+
+    <!-- page specific plugin scripts -->
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/jquery.dataTables.bootstrap.min.js"></script>
+    <script src="/static/js/dataTables.buttons.min.js"></script>
+    <script src="/static/js/buttons.flash.min.js"></script>
+    <script src="/static/js/buttons.html5.min.js"></script>
+    <script src="/static/js/buttons.print.min.js"></script>
+    <script src="/static/js/buttons.colVis.min.js"></script>
+    <script src="/static/js/dataTables.select.min.js"></script>
+
+    <!-- ace scripts -->
+    <script src="/static/js/ace-elements.min.js"></script>
+    <script src="/static/js/ace.min.js"></script>
+    <script src="/static/pdf-js/pdfobject.js"></script>
+
+    {% autoescape off %}
+    {% gacoiform_common_script %}
+    {% endautoescape %}
+
+</head>
+
+<body class="no-skin">
+<div id="navbar" class="navbar navbar-default  ace-save-state">
+    <div class="navbar-container ace-save-state" id="navbar-container">
+        <div class="navbar-header pull-left">
+            <a href="/" class="navbar-brand">
+                <small>
+                    <i class="fa"></i>
+                    {% appearance_system_name %}
+                </small>
+            </a>
+        </div>
+
+        <div class="navbar-buttons navbar-header pull-right" role="navigation">
+            <ul class="nav ace-nav">
+                <li class="light-blue dropdown-modal">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                        <!-- img class="nav-user-photo" src="{% static 'images/avatars/user.jpg' %}" alt="Jason's Photo" /> -->
+                        <span class="user-info">
+									<small>Welcome,</small>
+									{{user.name}}
+								</span>
+
+                        <i class="ace-icon fa fa-caret-down"></i>
+                    </a>
+
+                    <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                        <li>
+                            <a href="#" onclick="changePassword()">
+                                <i class="ace-icon fa fa-user"></i>
+                                Change password
+                            </a>
+                        </li>
+
+                        <li class="divider"></li>
+
+                        <li>
+                            <a href="/logout">
+                                <i class="ace-icon fa fa-power-off"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div><!-- /.navbar-container -->
+</div>
+
+<div class="main-container ace-save-state" id="main-container">
+    <script type="text/javascript">
+				try{ace.settings.loadState('main-container')}catch(e){}
+    </script>
+
+    <div id="sidebar" class="sidebar responsive ace-save-state">
+        <script type="text/javascript">
+					try{ace.settings.loadState('sidebar')}catch(e){}
+
+        </script>
+        {% autoescape off %}
+	    {% ace_menu_generate screen_name %}
+	    {% endautoescape %}
+        <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+            <i id="sidebar-toggle-icon" class="ace-icon fa fa-angle-double-left ace-save-state"
+               data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-content-inner">
+            <!--<div class="breadcrumbs ace-save-state" id="breadcrumbs">-->
+            <!--{% autoescape off %}-->
+            <!--{% ace_bread_crumbs_generate screen_name %}-->
+            <!--{% endautoescape %}-->
+
+                <!--<div class="nav-search" id="nav-search">-->
+                    <!--{% block nav_search %}{% endblock nav_search %}-->
+                <!--</div>-->
+
+            <!--</div>-->
+            <div class="page-content" id="page-content">
+                {% block content %}{% endblock content %}
+            </div><!-- /.page-content -->
+        </div>
+    </div><!-- /.main-content -->
+
+    <div class="footer">
+        <div class="footer-inner">
+            <div class="footer-content">
+                <span class="smaller-80">
+                    <span class="blue bolder">{% appearance_company_name %}</span>
+                    {% appearance_system_name %} &copy; 2017
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+        <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+    </a>
+</div><!-- /.main-container -->
+
+
+<script type="text/javascript">
+    function changePassword(){
+        var url = "/password/";
+		var title = "Change password";
+		var dialog = bootbox.dialog({
+			title: title,
+		    message: '<iframe style="width:100%;border: none;" src="'+url+'"></iframe>',
+		});
+
+		dialog.init(function(){
+		    setTimeout(function(){
+		        dialog.find('.bootbox-body').css('margin','-10px -10px -10px -10px');
+		        height = $(window).height() - 100;
+		        dialog.find('iframe').css("height", height - 150);
+		    }, 1);
+		});
+    }
+
+    (function(window) {
+        $type = String;
+        $type.__typeName = 'String';
+        $type.__class = true;
+
+        $prototype = $type.prototype;
+        $prototype.endsWith = function String$endsWith(suffix) {
+            /// <summary>Determines whether the end of this instance matches the specified string.</summary>
+            /// <param name="suffix" type="String">A string to compare to.</param>
+            /// <returns type="Boolean">true if suffix matches the end of this instance; otherwise, false.</returns>
+            return (this.substr(this.length - suffix.length) === suffix);
+        }
+
+        $prototype.startsWith = function String$startsWith(prefix) {
+            /// <summary >Determines whether the beginning of this instance matches the specified string.</summary>
+            /// <param name="prefix" type="String">The String to compare.</param>
+            /// <returns type="Boolean">true if prefix matches the beginning of this string; otherwise, false.</returns>
+            return (this.substr(0, prefix.length) === prefix);
+        }
+
+        $prototype.trim = function String$trim() {
+            /// <summary >Removes all leading and trailing white-space characters from the current String object.</summary>
+            /// <returns type="String">The string that remains after all white-space characters are removed from the start and end of the current String object.</returns>
+            return this.replace(/^\s+|\s+$/g, '');
+        }
+
+        $prototype.trimEnd = function String$trimEnd() {
+            /// <summary >Removes all trailing white spaces from the current String object.</summary>
+            /// <returns type="String">The string that remains after all white-space characters are removed from the end of the current String object.</returns>
+            return this.replace(/\s+$/, '');
+        }
+
+        $prototype.trimStart = function String$trimStart() {
+            /// <summary >Removes all leading white spaces from the current String object.</summary>
+            /// <returns type="String">The string that remains after all white-space characters are removed from the start of the current String object.</returns>
+            return this.replace(/^\s+/, '');
+        }
+
+        $type.format = function String$format(format, args) {
+            /// <summary>Replaces the format items in a specified String with the text equivalents of the values of   corresponding object instances. The invariant culture will be used to format dates and numbers.</summary>
+            /// <param name="format" type="String">A format string.</param>
+            /// <param name="args" parameterArray="true" mayBeNull="true">The objects to format.</param>
+            /// <returns type="String">A copy of format in which the format items have been replaced by the   string equivalent of the corresponding instances of object arguments.</returns>
+            return String._toFormattedString(false, arguments);
+        }
+
+        $type._toFormattedString = function String$_toFormattedString(useLocale, args) {
+            var result = '';
+            var format = args[0];
+
+            for (var i = 0; ; ) {
+                // Find the next opening or closing brace
+                var open = format.indexOf('{', i);
+                var close = format.indexOf('}', i);
+                if ((open < 0) && (close < 0)) {
+                    // Not found: copy the end of the string and break
+                    result += format.slice(i);
+                    break;
+                }
+                if ((close > 0) && ((close < open) || (open < 0))) {
+
+                    if (format.charAt(close + 1) !== '}') {
+                        throw new Error('format stringFormatBraceMismatch');
+                    }
+
+                    result += format.slice(i, close + 1);
+                    i = close + 2;
+                    continue;
+                }
+
+                // Copy the string before the brace
+                result += format.slice(i, open);
+                i = open + 1;
+
+                // Check for double braces (which display as one and are not arguments)
+                if (format.charAt(i) === '{') {
+                    result += '{';
+                    i++;
+                    continue;
+                }
+
+                if (close < 0) throw new Error('format stringFormatBraceMismatch');
+
+
+                // Find the closing brace
+
+                // Get the string between the braces, and split it around the ':' (if any)
+                var brace = format.substring(i, close);
+                var colonIndex = brace.indexOf(':');
+                var argNumber = parseInt((colonIndex < 0) ? brace : brace.substring(0, colonIndex), 10) + 1;
+
+                if (isNaN(argNumber)) throw new Error('format stringFormatInvalid');
+
+                var argFormat = (colonIndex < 0) ? '' : brace.substring(colonIndex + 1);
+
+                var arg = args[argNumber];
+                if (typeof (arg) === "undefined" || arg === null) {
+                    arg = '';
+                }
+
+                // If it has a toFormattedString method, call it.  Otherwise, call toString()
+                if (arg.toFormattedString) {
+                    result += arg.toFormattedString(argFormat);
+                }
+                else if (useLocale && arg.localeFormat) {
+                    result += arg.localeFormat(argFormat);
+                }
+                else if (arg.format) {
+                    result += arg.format(argFormat);
+                }
+                else
+                    result += arg.toString();
+
+                i = close + 1;
+            }
+
+            return result;
+        }
+
+    })(window);
+
+    $( document ).ready(function() {
+        $('[type=text].integer').css('text-align', 'right');
+        $('[type=text].integer').number( true , 0);
+
+
+       <!--$('[type=number]').keyup(function(event) {-->
+          <!-- skip for arrow keys-->
+          <!--if(event.which >= 37 && event.which <= 40) return;-->
+
+          <!-- format number-->
+          <!--$(this).val(function(index, value) {-->
+            <!--return value-->
+            <!--.replace(/\D/g, "")-->
+            <!--.replace(/\B(?=(\d{3})+(?!\d))/g, ",")-->
+            <!--;-->
+          <!--});-->
+       <!--});-->
+    });
+
+
+</script>
+		<!--<script type="text/javascript">-->
+			<!--if('ontouchstart' in document.documentElement) document.write("<script src='assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");-->
+		<!--</script>-->
+
+
+<script>
+
+    function start_spinner() {
+        var opts = {
+            lines: 11 // The number of lines to draw
+            ,length: 5 // The length of each line\n\t\t
+            , width: 5 // The line thickness\n\t\t
+            , radius: 11 // The radius of the inner circle\n\t\t
+            , scale: 2 // Scales overall size of the spinner\n\t\t
+            , corners: 0.2 // Corner roundness (0..1)\n\t\t
+            , color: "#000"
+            , opacity: 0.15 // Opacity of the lines\n\t\t
+            , rotate: 0 // The rotation offset\n\t\t
+            , direction: 1 // 1: clockwise , -1: counterclockwise\n\t\t
+            , speed: 1 // Rounds per second\n\t\t
+            , trail: 56 // Afterglow percentage\n\t\t
+            , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS\n\t\t
+            , zIndex: 2e9 // The z-index (defaults to 2000000000)\n\t\t
+            , className: "spinner" // The CSS class to assign to the spinner\n\t\t
+            , top: "50%" // Top position relative to parent\n\t\t
+            , left: "50%" // Left position relative to parent\n\t\t
+            , shadow: false // Whether to render a shadow\t\t
+            , hwaccel: false // Whether to use hardware acceleration\n\t\t
+            , position: "absolute" // Element positioning\n\t
+        }
+        $("#page-content").append('<div id="spinner-preview"> </div>');
+        $("#spinner-preview").css({"position": "absolute",
+                "left": "50%","margin-top": "-25%","margin-left": "-30px", "width": "100px", "height": "100px" });
+        var top = String(screen.height/2) + "px";
+        $("#spinner-preview").css({"top":top});
+        var target = document.getElementById("spinner-preview")
+        var spinner = new Spinner(opts).spin(target);
+    }
+    function stop_spinner() {
+        var target = document.getElementById("spinner - preview");
+        $("#spinner-preview").empty();
+    }
+</script>
+
+</body>
+
+</html>

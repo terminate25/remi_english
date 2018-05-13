@@ -1,0 +1,98 @@
+{% extends "course_base.html" %}
+{% load gacoitags %}
+{% block content %}
+{% load static %}
+<div class="lesson-video" style="height:100%;width:100%;">
+
+    <div align="center" style="width:100%;height:100%;">
+        <div class="video-header align-middle" style="height:10%;" align="center">
+            <h1> Watching this video</h1>
+        </div>
+        <div class="video-content" style="height:80%;"  >
+            <div align="center" style="height:100%; width: 100%">
+                <video style="height:100%;width:70%; "  id="video-leson" controls>
+                    <source src="{% static video_path type='video/mp4' %}"/>
+                </video>
+            </div>
+        </div>
+        <div class="video-end" style="height:10%;">
+            <div style="height:25%"></div>
+            <div style="height:50%">
+                <a href="/courses/?part={{ part_id }} ">
+                    <button type="button" style="float:left;margin-left:10px;" class="btn btn-success button-layout" disabled>Back</button>
+                </a>  <button type="button" id="next-button" style="float:right;margin-right: 10px;" onclick="return RenderAnotherPage(2)" class="btn btn-success button-layout" disabled>Next</button>
+            </div>
+            <div style="height:25%"></div>
+        </div>
+    </div>
+
+
+    <!--{% autoescape off %}-->
+    <!--{{ lag_form.render_course_video }}-->
+    <!--{% csrf_token %}-->
+    <!--{% endautoescape %}-->
+</div>
+<input type="hidden" id="summary_file_url" value="{{ summary_file_url }}">
+<div class="lesson-summary" style="height:100%;width:100%;" >
+    <div class="summary-content" style="height: 90%">
+        <div style="height: 10%;"> <h3> {{ lesson_name }} </h3> </div>
+        <div style="height: 80%;">
+            <div id="lesson-summary-file" style="height: 100%"></div>
+            {{ lesson_summary }}
+        </div>
+    </div>
+    <div class="summary-end" style="height: 10%">
+                <div class="video-end" style="height: 100%">
+            <div style="height:25%"></div>
+            <div style="height:50%">
+               <button type="button" style="float:left;margin-left:10px;"  onclick="return RenderAnotherPage(1)" class="btn btn-success button-layout">Back</button>
+               <a href="/courses/?part={{ part_id }}&video_done=true ">
+                <button type="button" style="float:right;margin-right: 10px;" class="btn btn-success button-layout" >Next</button></a>
+            </div>
+            <div style="height:25%"></div>
+        </div>
+
+    </div>
+</div>
+<script>
+ $(document).ready(function()
+    {
+        $(".lesson-video").show();
+        // $(".lesson-video").hide();
+
+        $(".lesson-summary").hide();
+
+    });
+</script>
+<script>
+    document.getElementById('video-leson').addEventListener('ended',myHandler,false);
+    function myHandler(e) {
+         $("#next-button").removeClass("btn btn-success button-layout");
+            $("#next-button").addClass("btn btn-danger button-layout");
+            $("#next-button").removeAttr('disabled')
+        // What you want to do after the event
+    }
+</script>
+
+<script>
+function RenderAnotherPage(value) {
+
+    if (value == 1) {
+        $(".lesson-video").show();
+        $(".lesson-summary").hide();
+
+    }
+    else
+    {
+        $(".lesson-video").hide();
+        var summary_file = document.getElementById("summary_file_url");
+        var path = summary_file.value;
+        PDFObject.embed(path, "#lesson-summary-file");
+        $(".lesson-summary").show();
+
+    }
+
+
+}
+</script>
+{% endblock content %}

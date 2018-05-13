@@ -1,0 +1,118 @@
+{% load static %}
+{% load gacoitags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta charset="utf-8"/>
+    <title>{% appearance_system_name %}</title>
+    <link rel="stylesheet" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}"/>
+    <meta name="description" content="Common form elements and layouts"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'font-awesome/4.5.0/css/font-awesome.min.css' %}"/>
+
+    <!-- page specific plugin styles -->
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.custom.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/chosen.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-datepicker3.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-timepicker.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/daterangepicker.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-colorpicker.min.css' %}"/>
+
+    <!-- text fonts -->
+    <link rel="stylesheet" href="{% static 'css/fonts.googleapis.com.css' %}"/>
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="{% static 'css/ace.min.css' %}" class="ace-main-stylesheet" id="main-ace-style"/>
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="{% static 'css/ace-part2.min.css' %}" class="ace-main-stylesheet"/>
+    <![endif]-->
+    <link rel="stylesheet" href="{% static 'css/ace-skins.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/ace-rtl.min.css' %}"/>
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="{% static 'css/ace-ie.min.css' %}"/>
+    <![endif]-->
+
+    <!-- inline styles related to this page -->
+
+    <!-- ace settings handler -->
+    <script src="{% static 'js/ace-extra.min.js' %}"></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+
+    <!--[if lte IE 8]>
+    <script src="{% static 'js/html5shiv.min.js' %}"></script>
+    <script src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+
+    <!-- basic scripts -->
+
+    <!--[if !IE]> -->
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
+
+    <!-- <![endif]-->
+
+    <!--[if IE]>
+    <script src="assets/js/jquery-1.11.3.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+			if('ontouchstart' in document.documentElement) document.write("<script src='/static/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+    </script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <!-- page specific plugin scripts -->
+    <script src="/static/js/wizard.min.js"></script>
+    <script src="/static/js/jquery.validate.min.js"></script>
+    <script src="/static/js/jquery-additional-methods.min.js"></script>
+    <script src="/static/js/bootbox.js"></script>
+    <script src="/static/js/jquery.maskedinput.min.js"></script>
+    <script src="/static/js/select2.min.js"></script>
+    <script src="/static/js/bootstrap-datepicker.min.js"></script>
+    <!--<script src="/static/js/bootstrap-datetimepicker.min.js"></script>-->
+    <script src="/static/js/locales/bootstrap-datepicker.ja.js"></script>
+    <script src="/static/js/bootstrap-timepicker.min.js"></script>
+
+    <script src="/static/js/jquery-ui.custom.min.js"></script>
+    <script src="/static/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="/static/js/jquery.easypiechart.min.js"></script>
+    <script src="/static/js/jquery.sparkline.index.min.js"></script>
+    <script src="/static/js/jquery.flot.min.js"></script>
+    <script src="/static/js/jquery.flot.pie.min.js"></script>
+    <script src="/static/js/jquery.flot.resize.min.js"></script>
+    <script src="/static/js/plotly-latest.min.js"></script>
+
+    <!-- ace scripts -->
+    <script src="/static/js/ace-elements.min.js"></script>
+    <script src="/static/js/ace.min.js"></script>
+    <script src="/static/pdf-js/pdfobject.js"></script>
+
+
+
+    {% autoescape off %}
+    {% gacoiform_common_script %}
+    {% endautoescape %}
+
+</head>
+
+	<body class="no-skin">
+	
+	
+			<div class="main-container ace-save-state" id="main-container">
+			{% block content %}{% endblock content %}
+	
+	
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="page-content">					
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+			</div>
+	</body>
+</html>

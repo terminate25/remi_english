@@ -1,0 +1,248 @@
+{% extends "course_base.html" %}
+{% load gacoitags %}
+{% block content %}
+{% load static %}
+
+<form name='formFilter' action="/courses" style="height:75vh;width:100%;">
+    <input type='hidden' value='{{ current_lesson}}' name='current_lesson'>
+    <input type='hidden' value='{{ next_question }}' name='next_question'>
+    <input type='hidden' value='{{ correct_question }}' name='correct_question'>
+    <input type='hidden' value='{{ total_question }}' name='total_question'>
+    <input type='hidden' value="{% static  '' %}" name='root_url'>
+    <div class="lesson-content-list" style="height:100%;width:100%;">
+        <br><div> <h3 class="blue">&ensp;&ensp;{{ lesson_contents.lesson_name }}</h3></div>
+        <br>
+        <div class="container">
+            <div class="well well-sm" style="height: 46px;" >
+                <a href="/video_content/?part_id={{ lesson_contents.part_id }}">
+                    {% if lesson_contents.video_state %}
+                    <div class="clearfix">
+                        <span class="pull-left">
+                            <i class="btn btn-xs no-hover btn-success fa fa-film"></i>
+                            Step 1: Video and Summary
+                        </span>
+                        <span class="pull-right badge badge-success" style="margin-bottom: 0;">Passed</span>
+                    </div>
+                    {% else %}
+                    <div class="clearfix">
+                        <span class="pull-left">
+                            <i class="btn btn-xs no-hover btn-danger fa fa-film"></i>
+                            Video and Summary
+                        </span>
+                        <span class="pull-right badge badge-danger" style="margin-bottom: 0;">Unlocked</span>
+                    </div>
+                    {% endif %}
+                </a>
+          </div>
+
+            {% for test in lesson_contents.tests %}
+            <div class="well well-sm" style="height: 50px">
+                <a href="/test_content/?test_id={{ test.id }}">
+                    <div class="clearfix">
+                        <span class="pull-left">
+                            {% if test.is_right_question_passed and test.is_percent_question_passed  %}
+                            <i class="btn btn-xs no-hover btn-success fa fa-check-square-o" style="color: green"></i>
+                            {% else %}
+                             <i class="btn btn-xs no-hover btn-danger fa fa-check-square-o" style="color: red"></i>
+                            {% endif %}
+                             {{ test.name }}
+                        </span>
+                        <span class="pull-right ">
+                            <ul class="list-inline" style="margin-bottom: 0;">
+
+                                {% if test.is_right_question_passed %}
+                                <li> <span class="pull-right badge badge-success">{{ test.right_question }}</span></li>
+                                {% else %}
+                                 <li> <span class="pull-right badge badge-danger">{{ test.right_question }} </span></li>
+                                {% endif %}
+                                {% if test.is_percent_question_passed %}
+                                 <li> <span class="pull-right badge badge-success">{{ test.percent }}%</span></li>
+                                {% else %}
+                                <li> <span class="pull-right badge badge-danger">{{ test.percent }}%</span></li>
+                                {% endif %}
+                                </ul>
+                        </span>
+                    </div>
+                </a>
+          </div>
+            {% endfor %}
+
+            <div style="height:50%">
+               <a href="/course_list/?course_id={{ course_id }}">
+                <button type="button" style="float:right;margin-right: 10px;" class="btn btn-success button-layout">Next</button></a>
+            </div>
+        </div>
+    </div>
+  <div class="lesson-summary">
+    </div>
+
+    <div class="questions" style="display: none;height:100%;width:100%;">
+        <div class="question-header">
+            <a href="/course_list" style="height:100%;width:10%;float:right;margin-right: 10px;">
+                <div class="close-button" style="height:100%">
+                    <button type="button" class="close" style="height:100%" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+            </a>
+        </div>
+
+        <div class="question-content" align="center">
+            <div class="question-content" align="center">
+                <div class="row" style="height:50%;width:80%;">
+                    <div id="progressbar" style="border-radius:20px; margin-top:5px;" class="ui-progressbar ui-widget ui-widget-content ui-corner-all progress progress-striped active"
+                         role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="37">
+                        <div class="ui-progressbar-value ui-widget-header ui-corner-left progress-bar progress-bar-success" style="width: 0%;">
+
+                        </div>
+                    </div>
+                </div>
+                 <div class="row" style="height:50%;width:100%;" hidden>
+                    <audio class="audio-player" controls autoplay >
+                    <source class="audio-source" src="{% static  '' %}" type="audio/mpeg">
+                    </audio>
+                 </div>
+
+            </div>
+            <div class="answer-content">
+
+
+                <div class="row" style="height:50%;width:100%;">
+                    <div class="col-sm-4" style="height:100%">
+                        <img class="img-thumbnail hidden-xs 1 " onclick="" src="{% static  '' %}" width="100%"
+                             height="100%" alt=""/>
+                    </div>
+                    <div class="col-sm-4" style="height:100%">
+                        <img class="img-thumbnail hidden-xs 2 " src="{% static  '' %}" width="100%" height="100%"
+                             alt=""/>
+                    </div>
+                    <div class="col-sm-4" style="height:100%">
+                        <img class="img-thumbnail hidden-xs 3 " src="{% static  '' %}" width="100%" height="100%"
+                             alt=""/>
+                    </div>
+                </div>
+                <div class="row" style="height:50%;width:100%;">
+                    <div class="col-sm-4" style="height:100%">
+                        <img class="img-thumbnail hidden-xs 4 " src="{% static  '' %}" width="100%" height="100%"
+                             alt=""/>
+                    </div>
+                    <div class="col-sm-4" style="height:100% ">
+                        <img class="img-thumbnail hidden-xs 5 " src="{% static  '' %}" width="100%" height="100%"
+                             alt=""/>
+                    </div>
+                    <div class="col-sm-4" style="height:100%">
+                        <img class="img-thumbnail hidden-xs 6 " src="{% static  '' %}" width="100%" height="100%"
+                             alt=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    .question-header
+    {
+        height:7%;
+        width:100%;
+        border-style: initial;
+        border-bottom:1px inset;
+    }
+    .question-content
+    {
+        height:86%;
+        width:100%;
+        border-style: unset;
+        border-bottom:1px inset;
+    }
+    .question-content-audio
+    {
+        height: 15%;
+        width:100%;
+
+    }
+    .question-content-question
+    {
+        height: 85%;
+        width:100%;
+    }
+
+</style>
+<script type="text/javascript">
+
+    function renderQuestion(state){
+		var form = document.forms["formFilter"];
+		var current_lesson = form['current_lesson'].value;
+		var correct_question = form['correct_question'].value;
+		var next_question = form['next_question'].value;
+		var total_question = form['total_question'].value;
+		var progressbar_unit = 100/total_question;
+
+		// Open/close hidden row first
+		// Get data from server
+        var url = String.format("/courses?is_json=true&current_lesson={0}&next_question={1}&state={2}&correct_question={3}", current_lesson,next_question,state,correct_question);
+        $.getJSON(url, function(result) {
+           // alert(JSON.stringify(result));
+            var current_percent = String(progressbar_unit*(next_question-1)) + "%";
+            $(".ui-progressbar-value.ui-widget-header.ui-corner-left.progress-bar.progress-bar-success").css("width", current_percent);
+
+            if ( result['error'])
+             {
+                    // alert(result['error_message']);
+
+                    return;
+             }
+             else
+             {
+                 $(".lesson-content-list").hide();
+                 $(".lesson-video").hide();
+                 $(".questions").show();
+                 form['next_question'].value = result['next_question'];
+                 form['correct_question'].value = result['correct_question'];
+                 for (var i =0;i<6;i++)
+                 {
+                    var index = i + 1;
+                    var right = result['images'][i]["right"];
+                    var image_url = result['images'][i]["url"];
+
+                    var src = form['root_url'].value + image_url;
+                    $('.img-thumbnail.hidden-xs.' + index).attr('src',src);
+                    $('.img-thumbnail.hidden-xs.' + index).off('click');
+                    if (right == 1) {
+                        $('.img-thumbnail.hidden-xs.' + index).click(function(){
+                            renderQuestion(1);
+                     });
+                     }
+                     else
+                     {
+                     $('.img-thumbnail.hidden-xs.' + index).click(function(){
+                            renderQuestion(0);
+                     });
+                   }
+                }
+                var audio_url = result['audio_url'];
+                var audio_src = form['root_url'].value + audio_url;
+                $('.audio-source').attr('src',audio_src);
+                $('audio')[0].load();
+                $('audio')[0].play();
+                }
+             })
+       return false;
+	}
+
+</script>
+<script>
+    $(document).ready(function()
+    {
+        $(".lesson-content-list").show();
+        // $(".lesson-video").hide();
+        $(".questions").hide();
+
+    });
+
+
+
+</script>
+
+{% endblock content %}

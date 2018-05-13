@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load gacoitags %}
+{% block content %}
+
+
+{% autoescape off %}
+{{ keuForm.render_title }}
+{{ typeForm.render_form_begin }}
+{% csrf_token %}
+{{ typeForm.render_content }}
+{{ typeForm.render_form_end }}
+{{ typeForm.render_script }}
+{% endautoescape %}
+
+
+<script>
+
+    function do_change_password(user_id){
+        var url = "/password/?user_id=" + user_id;
+		var title = "Change password";
+		var dialog = bootbox.dialog({
+			title: title,
+		    message: '<iframe style="width:100%;border: none;" src="'+url+'"></iframe>',
+		});
+		dialog.init(function(){
+		    setTimeout(function(){
+		        dialog.find('.bootbox-body').css('margin','-10px -10px -10px -10px');
+		        height = $(window).height() - 100;
+		        dialog.find('iframe').css("height", height - 150);
+		    }, 1);
+		});
+		return false;
+    }
+</script>
+
+{% endblock content %}
