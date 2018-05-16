@@ -19,7 +19,7 @@ def video_content(request):
     lag_form.set_image_course(video_path, "Watching this video")
     part = Part.objects.get(pk=part_id)
     part_name = part.name
-    summary_path = '/static/courses/{0}/summary/{1}'.format(str(part_id), part.summary)
+    summary_path = '/media/{0}/summary/{1}'.format(str(part_id), part.summary)
     context = {
         'lag_form': lag_form,
         'video_path': video_path,
