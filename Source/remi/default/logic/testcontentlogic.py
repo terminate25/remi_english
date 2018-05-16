@@ -89,21 +89,21 @@ class TestContentLogic:
         print(next_question_id)
         next_question = Question.objects.get(id=next_question_id)
         options_dict = dict()
-        image_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(next_question.part_id), 'test', str(test_id),
+        image_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test', str(test_id),
                                                      str(next_question.id), 'question', 'image')
         image_file_names = os.listdir(image_path)
         if len(image_file_names) > 0:
             options_dict['image_url'] = "courses/{0}/test/{1}/{2}/question/image/{3}".format(next_question.part_id, test_id,
                                                                                           str(next_question.id),
                                                                                           image_file_names[0] )
-        audio_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(next_question.part_id), 'test', str(test_id),
+        audio_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test', str(test_id),
                                   str(next_question.id), 'question', 'audio')
         audio_files = os.listdir(audio_path)
         if len(audio_files) > 0:
             options_dict['audio_url'] = "courses/{0}/test/{1}/{2}/question/audio/{3}".format(next_question.part_id,
                                                                                               test_id,
                                                                                               next_question.id, audio_files[0])
-        image_hint_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(next_question.part_id), 'test', str(test_id),
+        image_hint_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test', str(test_id),
                                   str(next_question.id), 'question', 'image_hint')
         image_hint_files = os.listdir(image_hint_path)
         if len(image_hint_files) > 0:
@@ -135,7 +135,7 @@ class TestContentLogic:
 
         options_dict = dict()
 
-        video_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(next_question.part_id), 'test', str(test_id),
+        video_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test', str(test_id),
                                   str(next_question.id), 'question', 'video')
         video_files = os.listdir(video_path)
         if len(video_files) > 0:
@@ -144,7 +144,7 @@ class TestContentLogic:
                                                                                                  next_question.id,
                                                                                                  video_files[0])
 
-        image_hint_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(next_question.part_id), 'test', str(test_id),
+        image_hint_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test', str(test_id),
                                   str(next_question.id), 'question', str(next_question.question), 'image_hint')
         image_hint_path_files = os.listdir(image_hint_path)
         if len(image_hint_path_files) > 0:
@@ -184,7 +184,7 @@ class TestContentLogic:
                                                                            next_question.id,
                                                                            next_question.answer)
         right_option['right'] = 1
-        options_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(next_question.part_id), 'test',
+        options_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test',
                                     str(test_id),
                                     str(next_question.id), 'answer')
         options_files = os.listdir(options_path)
@@ -203,11 +203,11 @@ class TestContentLogic:
         options_dict['options'] = option_list
 
         audio_file_path = os.path.join(settings.BASE_DIR,
-                                       "static/courses/{0}/test/{1}/{2}/question".format(next_question.part_id,
+                                       "media/{0}/test/{1}/{2}/question".format(next_question.part_id,
                                                                                          test_id, next_question.id))
         audio_files = os.listdir(audio_file_path)[0]
         image_question_path = os.path.join(settings.BASE_DIR,
-                                           "static/courses/{0}/test/{1}/{2}/question".format(next_question.part_id,
+                                           "media/{0}/test/{1}/{2}/question".format(next_question.part_id,
                                                                                              test_id,
                                                                                              next_question.id))
         image_question_file = os.listdir(image_question_path)[0]
@@ -278,7 +278,7 @@ class TestContentLogic:
         right_option['url'] = "courses/{0}/test/{1}/{2}/answer/{3}".format(next_question.part_id, test_id, next_question.id,
                                                                         next_question.answer)
         right_option['right'] = 1
-        options_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(next_question.part_id), 'test',
+        options_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test',
                                     str(test_id),
                                     str(next_question.id), 'answer')
         options_files = os.listdir(options_path)
@@ -301,10 +301,10 @@ class TestContentLogic:
             options_dict['questions_url'] = "courses/{0}/test/{1}/{2}/question/{3}".format(next_question.part_id,
                                                                                               test_id, next_question.id, next_question.question)
         if current_test_type == QuestionType.Type3.code:
-            audio_file_path = os.path.join(settings.BASE_DIR, "static/courses/{0}/test/{1}/{2}/question".format(next_question.part_id,
+            audio_file_path = os.path.join(settings.BASE_DIR, "media/{0}/test/{1}/{2}/question".format(next_question.part_id,
                                                                                               test_id, next_question.id),"audio")
             audio_files = os.listdir(audio_file_path)[0]
-            image_question_path = os.path.join(settings.BASE_DIR, "static/courses/{0}/test/{1}/{2}/question".format(next_question.part_id,
+            image_question_path = os.path.join(settings.BASE_DIR, "media/{0}/test/{1}/{2}/question".format(next_question.part_id,
                                                                                               test_id, next_question.id),"image")
             image_question_file = os.listdir(image_question_path)[0]
             options_dict['question_audio_url'] = "courses/{0}/test/{1}/{2}/question/audio/{3}".format(next_question.part_id,
