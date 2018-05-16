@@ -33,6 +33,5 @@ urlpatterns = [
     url(r'^master/', views.master, name='master'),
     url(r'^manage_statistical/', views.managestatistical, name='manage_statistical'),
 
-
     url(r'^$', views.courses_list, name='courses_list'),
 ]

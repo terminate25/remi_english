@@ -199,7 +199,7 @@ class CourseListLogic:
     @staticmethod
     def get_video_path(part_id):
         current_part = Part.objects.get(pk=part_id)
-        upload_video_path = '/courses/' + str(part_id) + '/video/{0}'.format(current_part.video)
+        upload_video_path = '/static/courses/' + str(part_id) + '/video/{0}'.format(current_part.video)
         return upload_video_path
 
     @staticmethod
