@@ -64,8 +64,10 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 # STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-#     os.path.join(BASE_DIR, "courses"),
+#     # os.path.join(BASE_DIR, "static"),
+#     # os.path.join(BASE_DIR, "courses"),
+#     os.path.join(BASE_DIR, "media"),
+#     os.path.join(BASE_DIR, "static")
 # ]
 
 STATICFILES_FINDERS = (
@@ -155,6 +157,6 @@ TIME_ZONE = 'UTC'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-MEDIA_URL = '/courses/'
-MEDIA_ROOT = os.path.join(STATIC_ROOT, 'courses')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 

@@ -11,7 +11,8 @@
         <div class="video-content" style="height:80%;"  >
             <div align="center" style="height:100%; width: 100%">
                 <video style="height:100%;width:70%; "  id="video-leson" controls>
-                    <source src="{% static video_path type='video/mp4' %}"/>
+                    <source src="{{video_path}}" type="video/mp4" />
+                    <!--<source src="{% static video_path type='video/mp4' %}"/>-->
                 </video>
             </div>
         </div>

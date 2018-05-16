@@ -15,7 +15,7 @@
     <!-- For type 4 only banana -->
     <input type='hidden' value='' name='answer_type4'>
     <!--End for type 4-->
-    <input type='hidden' value="{% static  '' %}" name='root_url'>
+    <input type='hidden' value="media" name='root_url'>
     <input type='hidden' value='{{ current_test_type }}' name='current_test_type'>
     <!--For type 2 and 3,4-->
     <input type='hidden' value='0' id='current_question' name='option_run_out'>
@@ -131,7 +131,8 @@
                 var backgroundColor = backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
                 var right = option_list[i]["right"];
                 var image_url = option_list[i]["url"];
-                var src = form['root_url'].value + image_url;
+//                var src = form['root_url'].value + image_url;
+                var src = image_url;
                 var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
                 var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
                 var row_index = 2;
@@ -231,7 +232,8 @@
                 options_number = result['options_number'];
                 current_question = result['current_question'];
                 form['current_question'].value = current_question;
-                var src = form['root_url'].value + option_dict['questions_url'];
+//                var src = form['root_url'].value + option_dict['questions_url'];
+                var src = option_dict['questions_url'];
                 $('#question-content').append(
                     '<div class="">' +
                     '<img class="img-thumbnail hidden-xs fixed_type_23" src="' + src + '" width="100%" height="70%" alt=""/>' +
@@ -245,7 +247,8 @@
                     console.log(backgroundColor);
                     var right = option_list[i]["right"];
                     var option_src = option_list[i]["url"];
-                    var src = form['root_url'].value + option_src;
+//                    var src = form['root_url'].value + option_src;
+                    var src = option_src;
                     var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
                     var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
 
@@ -359,7 +362,8 @@
                 options_number = result['options_number'];
                 current_question = result['current_question'];
                 form['current_question'].value = current_question;
-                var image_src = form['root_url'].value + option_dict['questions_url'];
+//                var image_src = form['root_url'].value + option_dict['questions_url'];
+                var image_src = option_dict['questions_url'];
                     $('#question-content').append(
                         '<div class="">' +
                         '<img class="img-thumbnail hidden-xs fixed_type_23" src="' + image_src + '" width="100%" height="70%" alt=""/>' +
@@ -387,7 +391,8 @@
                         console.log(backgroundColor);
                         var right = option_list[i]["right"];
                         var option_src = option_list[i]["url"];
-                        var src = form['root_url'].value + option_src;
+                        var src = option_src;
+//                        var src = form['root_url'].value + option_src;
                         var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
                         var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
 
@@ -489,7 +494,8 @@ function loadOptionsDictType5(event, total_question, right_question, current_que
                 current_question = result['current_question'];
                 form['current_question'].value = current_question;
 
-                var src = form['root_url'].value + option_dict['questions_url'];
+//                var src = form['root_url'].value + option_dict['questions_url'];
+                var src = option_dict['questions_url'];
                 $('#question-content').append(
                     '<div class="alert alert-info" style="height:100%;width:80;margin-bottom: 0px">' +
                     '   <div><h3>'+ option_dict['question'] + '</h3></div>'+
@@ -853,7 +859,8 @@ function loadOptionsDictType7(event, total_question, right_question, current_que
                 options_number = result['options_number'];
                 current_question = result['current_question'];
                 form['current_question'].value = current_question;
-                var src = form['root_url'].value + option_dict['questions_url'];
+                var src = option_dict['questions_url'];
+//                var src = form['root_url'].value + option_dict['questions_url'];
 
                 $('#question-content').append(' <div class="video-fixed-type-8" >' +
                     '<video style="height:100%;width:70%; "  id="video-leson" autoplay>' +
@@ -868,7 +875,8 @@ function loadOptionsDictType7(event, total_question, right_question, current_que
                         console.log(backgroundColor);
                         var right = option_list[i]["right"];
                         var option_src = option_list[i]["url"];
-                        var src = form['root_url'].value + option_src;
+//                        var src = form['root_url'].value + option_src;
+                        var src = option_src;
                         var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
                         var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
 

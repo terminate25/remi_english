@@ -17,7 +17,7 @@ from django.http import JsonResponse
 
 
 def list_courses(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.POST.get('action_type', 0) == 0:
         ret = dict()
         ret["is_error"] = "true"
         if Course.objects.first() is None:

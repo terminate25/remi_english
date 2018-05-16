@@ -275,10 +275,10 @@ class TestContentLogic:
         option_list = []
 
         right_option = dict()
-        right_option['url'] = "courses/{0}/test/{1}/{2}/answer/{3}".format(next_question.part_id, test_id, next_question.id,
+        right_option['url'] = "/media/{0}/test/{1}/{2}/answer/{3}".format(next_question.part_id, test_id, next_question.id,
                                                                         next_question.answer)
         right_option['right'] = 1
-        options_path = os.path.join(settings.BASE_DIR, 'media/', str(next_question.part_id), 'test',
+        options_path = os.path.join(settings.BASE_DIR, 'media', str(next_question.part_id), 'test',
                                     str(test_id),
                                     str(next_question.id), 'answer')
         options_files = os.listdir(options_path)
@@ -286,7 +286,7 @@ class TestContentLogic:
 
         for option_file in options_files:
             option = dict()
-            option['url'] = "courses/{0}/test/{1}/{2}/answer/{3}".format(next_question.part_id, test_id, next_question.id,
+            option['url'] = "/media/{0}/test/{1}/{2}/answer/{3}".format(next_question.part_id, test_id, next_question.id,
                                                                       option_file)
             option['right'] = 0
             option_list.append(option)
@@ -295,21 +295,21 @@ class TestContentLogic:
         options_dict = dict()
         options_dict['options'] = option_list
         if current_test_type == QuestionType.Type1.code:
-            options_dict['questions_url'] = "courses/{0}/test/{1}/{2}/question/{3}".format(next_question.part_id, test_id,
+            options_dict['questions_url'] = "/media/{0}/test/{1}/{2}/question/{3}".format(next_question.part_id, test_id,
                                                                                            next_question.id, next_question.question)
         elif current_test_type == QuestionType.Type2.code or current_test_type == QuestionType.Type8.code:
-            options_dict['questions_url'] = "courses/{0}/test/{1}/{2}/question/{3}".format(next_question.part_id,
+            options_dict['questions_url'] = "/media/{0}/test/{1}/{2}/question/{3}".format(next_question.part_id,
                                                                                               test_id, next_question.id, next_question.question)
         if current_test_type == QuestionType.Type3.code:
-            audio_file_path = os.path.join(settings.BASE_DIR, "media/{0}/test/{1}/{2}/question".format(next_question.part_id,
+            audio_file_path = os.path.join(settings.BASE_DIR, "/media/{0}/test/{1}/{2}/question".format(next_question.part_id,
                                                                                               test_id, next_question.id),"audio")
             audio_files = os.listdir(audio_file_path)[0]
-            image_question_path = os.path.join(settings.BASE_DIR, "media/{0}/test/{1}/{2}/question".format(next_question.part_id,
+            image_question_path = os.path.join(settings.BASE_DIR, "/media/{0}/test/{1}/{2}/question".format(next_question.part_id,
                                                                                               test_id, next_question.id),"image")
             image_question_file = os.listdir(image_question_path)[0]
-            options_dict['question_audio_url'] = "courses/{0}/test/{1}/{2}/question/audio/{3}".format(next_question.part_id,
+            options_dict['question_audio_url'] = "/media/{0}/test/{1}/{2}/question/audio/{3}".format(next_question.part_id,
                                                                                               test_id, next_question.id, audio_files)
-            options_dict['questions_url'] = "courses/{0}/test/{1}/{2}/question/image/{3}".format(next_question.part_id,
+            options_dict['questions_url'] = "/media/{0}/test/{1}/{2}/question/image/{3}".format(next_question.part_id,
                                                                                            test_id, next_question.id,
                                                                                                  image_question_file)
         return options_dict, number_options, next_question_id
