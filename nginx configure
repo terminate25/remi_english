@@ -1,0 +1,10 @@
+structure project
+projectname ---- projectname ---- settings.py
+            ---- static
+            ---- manage.py
+
+***Test and change mod user of nginx***
+sudo -u www-data stat /username/test/static
+gpasswd -a www-data username
+chmod g+x /username && chmod g+x /username/test && chmod g+x /username/test/static
+nginx -s reload
