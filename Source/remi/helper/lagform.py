@@ -1054,7 +1054,7 @@ class LagForm:
             rowtmp += '        Select answer'
             rowtmp += '       </h4>'
             rowtmp += '     <select class ="form-control answer-option" name="answer-{0}-{1}-{2}">'.format(str(question_id), str(type), str(test_id))
-            answer_file_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+            answer_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                             str(test_id), str(question_id), 'answer')
             answer_file_list = list()
             if os.path.exists(answer_file_path):
@@ -1107,7 +1107,7 @@ class LagForm:
             rowtmp += '       </h4>'
             rowtmp += '     <select class ="form-control answer-option" name="answer-{0}-{1}-{2}">'.format(
                 str(question_id), str(type), str(test_id))
-            answer_file_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+            answer_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                             str(test_id), str(question_id), 'answer')
             answer_file_list = list()
             if os.path.exists(answer_file_path):
@@ -1314,7 +1314,7 @@ class LagForm:
             rowtmp += '       </h4>'
             rowtmp += '     <select class ="form-control answer-option" name="answer-{0}-{1}-{2}">'.format(
                 str(question_id), str(type), str(test_id))
-            answer_file_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+            answer_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                             str(test_id), str(question_id), 'answer')
             answer_file_list = list()
             if os.path.exists(answer_file_path):

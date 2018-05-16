@@ -41,7 +41,7 @@ class CreateCourseLogic:
 
     @staticmethod
     def save_course_video(request, part_id, filename):
-        upload_video_path = os.path.join(settings.BASE_DIR, 'static/courses/', part_id, 'video')
+        upload_video_path = os.path.join(settings.BASE_DIR, 'media/', part_id, 'video')
         if not os.path.exists(upload_video_path):
             os.makedirs(upload_video_path)
         upload_video_path = os.path.join(upload_video_path, filename)
@@ -51,7 +51,7 @@ class CreateCourseLogic:
     @staticmethod
     def save_lesson_summary(request, lesson_id, filename):
         filename_strip = filename.replace(" ","-")
-        upload_pdf_path = os.path.join(settings.BASE_DIR, 'static/courses/', lesson_id, 'summary')
+        upload_pdf_path = os.path.join(settings.BASE_DIR, 'media/', lesson_id, 'summary')
         if not os.path.exists(upload_pdf_path):
             os.makedirs(upload_pdf_path)
         upload_video_path = os.path.join(upload_pdf_path, filename_strip)
@@ -230,13 +230,13 @@ class CreateCourseLogic:
         # Delete test and question not exist
         for i in range(0, len(list_testid)):
             Test.objects.filter(id=list_testid[i]).delete()
-            test_dir = os.path.join(settings.BASE_DIR, 'static/courses/', str(part_id), 'test', str(list_testid[i]))
+            test_dir = os.path.join(settings.BASE_DIR, 'media/', str(part_id), 'test', str(list_testid[i]))
             if os.path.exists(test_dir):
                 shutil.rmtree(test_dir, ignore_errors=True)
         for i in range(0, len(list_questionid)):
             test_id = Question.objects.filter(id=list_questionid[i])[0].test_id
             Question.objects.filter(id=list_questionid[i]).delete()
-            question_dir = os.path.join(settings.BASE_DIR, 'static/courses/', str(part_id), 'test', str(test_id), str(list_questionid[i]))
+            question_dir = os.path.join(settings.BASE_DIR, 'media/', str(part_id), 'test', str(test_id), str(list_questionid[i]))
             if os.path.exists(question_dir):
                 shutil.rmtree(question_dir, ignore_errors=True)
         # Delete question item
@@ -297,7 +297,7 @@ class CreateCourseLogic:
                 audio_file = None
             if audio_file is not None:
                 question_file_name = audio_file.name
-                question_file_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test', str(test_id),
+                question_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test', str(test_id),
                                                  str(question_id), 'question')
                 #delete before save
                 if os.path.exists(question_file_path):
@@ -310,14 +310,14 @@ class CreateCourseLogic:
             list_question_change = request.POST.getlist('question_change', None)
             if list_question_change is not None:
                 if str(question_id) in list_question_change:
-                    answer_dir = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test', str(test_id), str(question_id), 'answer')
+                    answer_dir = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test', str(test_id), str(question_id), 'answer')
                     if os.path.exists(answer_dir):
                         shutil.rmtree(answer_dir, ignore_errors=True)
             #save answer
             image_key = 'image-' + end_name
             images = files.getlist(image_key)
             for image in images:
-                image_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+                image_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                           str(test_id), str(question_id), 'answer')
                 result = CreateCourseLogic.store_file(image, image_path, image.name)
                 if result is None:
@@ -330,7 +330,7 @@ class CreateCourseLogic:
                 image_file = None
             if image_file is not None:
                 question_file_name = image_file.name
-                question_file_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test', str(test_id),
+                question_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test', str(test_id),
                                                  str(question_id), 'question')
                 # delete before save
                 if os.path.exists(question_file_path):
@@ -343,7 +343,7 @@ class CreateCourseLogic:
             list_question_change = request.POST.getlist('question_change', None)
             if list_question_change is not None:
                 if str(question_id) in list_question_change:
-                    answer_dir = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+                    answer_dir = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                               str(test_id), str(question_id), 'answer')
                     if os.path.exists(answer_dir):
                         shutil.rmtree(answer_dir, ignore_errors=True)
@@ -352,7 +352,7 @@ class CreateCourseLogic:
             audios_key = 'audio-' + end_name
             audios = files.getlist(audios_key)
             for audio in audios:
-                audio_path = os.path.join(settings.BASE_DIR, 'static/courses', str(lesson_id), 'test',
+                audio_path = os.path.join(settings.BASE_DIR, 'media', str(lesson_id), 'test',
                                           str(test_id),
                                           str(question_id), 'answer')
                 result = CreateCourseLogic.store_file(audio, audio_path, audio.name)
@@ -367,13 +367,13 @@ class CreateCourseLogic:
                 audio_file = None
             if audio_file is not None:
                 #Delete answer before save
-                answer_dir = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+                answer_dir = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                           str(test_id), str(question_id), 'question')
                 if os.path.exists(answer_dir):
                     shutil.rmtree(answer_dir, ignore_errors=True)
                 #save ne
                 question_file_name = audio_file.name
-                upload_video_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test', str(test_id),
+                upload_video_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test', str(test_id),
                                                  str(question_id), 'question')
                 result = CreateCourseLogic.store_file(audio_file, upload_video_path, question_file_name)
                 if result is None:
@@ -385,7 +385,7 @@ class CreateCourseLogic:
             image_file_key = 'image-' + end_name
             audio_file_key = 'audio-' + end_name
             image_hint_file_key = 'image_hint-' + end_name
-            path_save_qf = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+            path_save_qf = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                         str(test_id),
                                         str(question_id), 'question')
             CreateCourseLogic.save_follow_key(request, image_file_key, path_save_qf, False)
@@ -394,7 +394,7 @@ class CreateCourseLogic:
         elif question_type == QuestionType.Type7.code:
             video_file_key = 'video-' + end_name
             image_hint_file_key = 'image_hint-' + end_name
-            path_save_qf = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+            path_save_qf = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                         str(test_id),
                                         str(question_id), 'question')
             CreateCourseLogic.save_follow_key(request, video_file_key, path_save_qf, False)
@@ -402,14 +402,14 @@ class CreateCourseLogic:
         elif question_type == QuestionType.Type3.code:
             image_file_key = 'image-' + end_name
             question_audio_file_key = 'audio-' + end_name
-            path_save_qf = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+            path_save_qf = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                         str(test_id),
                                         str(question_id), 'question')
             CreateCourseLogic.save_follow_key(request, image_file_key, path_save_qf, False)
             CreateCourseLogic.save_follow_key(request, question_audio_file_key, path_save_qf, False)
 
             #save answer
-            path_save_af = os.path.join(settings.BASE_DIR, 'static/courses/', str(lesson_id), 'test',
+            path_save_af = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
                                         str(test_id),
                                         str(question_id), 'answer')
             audio_file_key = 'answer_audio-' + end_name
@@ -491,7 +491,7 @@ class CreateCourseLogic:
         BaseUserPart.objects.filter(part_id=part_id).delete()
         Question.objects.filter(part_id=part_id).delete()
         # TODO: Delete related files
-        lesson_dir = os.path.join(settings.BASE_DIR, 'static/courses/', str(part_id))
+        lesson_dir = os.path.join(settings.BASE_DIR, 'media/', str(part_id))
         if os.path.exists(lesson_dir):
             shutil.rmtree(lesson_dir, ignore_errors=True)
 
@@ -546,7 +546,7 @@ class CreateCourseLogic:
                 type_test = test_info[i].type
                 if type_test != 5:
                     question_file_list = list()
-                    question_file_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(part_id), 'test',
+                    question_file_path = os.path.join(settings.BASE_DIR, 'media/', str(part_id), 'test',
                                                       str(test_info[i].id), str(question_info[j].id), 'question')
                     if type_test == 6:
                         image_path = os.path.join(question_file_path, 'image')
@@ -585,7 +585,7 @@ class CreateCourseLogic:
                             question_file_list = list_file
                 #get answer in folder
                     answer_file_list = list()
-                    answer_file_path = os.path.join(settings.BASE_DIR, 'static/courses/', str(part_id), 'test', str(test_info[i].id), str(question_info[j].id), 'answer')
+                    answer_file_path = os.path.join(settings.BASE_DIR, 'media/', str(part_id), 'test', str(test_info[i].id), str(question_info[j].id), 'answer')
                     if os.path.exists(answer_file_path):
                         answer_file_list = [f for f in os.listdir(answer_file_path)]
 
