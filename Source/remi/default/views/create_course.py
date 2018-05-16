@@ -58,10 +58,13 @@ def create_course(request):
 
     #for get lesson and level option
     if request.method == "POST":
+
+
         params = request.POST
         ret = dict()
         is_level_select = params.get('is_level_select','')
         if is_level_select == 'true':
+            ret['is_error'] = "false"
             course_id = params.get('course_select','')
             if course_id != '':
                 course_id = int(params.get('course_select',''))
@@ -69,6 +72,19 @@ def create_course(request):
                 course_id = 0
             level_select = list()
             level_object = Level.objects.filter(course_id=course_id)
+            if level_object.count() == 0:
+                ret['is_error'] = "true"
+                current_course_name = Course.objects.filter(pk=course_id).first().name
+                ret['message'] = 'Please create level for course "' + current_course_name + '" in Master'
+                #Add new remove course which not contain level
+                # new_course_object = Course.objects.exclude(pk=course_id)
+                # course_select = list()
+                # for course_idx in range(0, new_course_object.count()):
+                #     course_dict = dict()
+                #     course_dict["id"] = new_course_object[course_idx].id
+                #     course_dict["name"] = new_course_object[course_idx].name
+                #     course_select.append(course_dict)
+                # ret['new_course_list'] = course_select
             for i in range(0, level_object.count()):
                 level_dict = dict()
                 level_dict["id"] = level_object[i].id
@@ -78,13 +94,36 @@ def create_course(request):
             return JsonResponse(ret, safe=False)
         is_lesson_select = params.get('is_lesson_select')
         if is_lesson_select == 'true':
+            ret['is_error'] = "false"
             level_id = params.get('level_select', '')
             if level_id != '':
                 level_id = int(params.get('level_select', ''))
             else:
                 level_id = 0
+
+            course_id = params.get('course_select', '')
+            if course_id != '':
+                course_id = int(course_id)
+            else:
+                course_id = 0
+
             lesson_select = list()
             lesson_object = Lesson.objects.filter(level_id=level_id)
+            #Add new for validate
+            if lesson_object.count() == 0:
+                ret['is_error'] = "true"
+                current_level_name = Level.objects.filter(pk=level_id).first().name
+                current_course_name = Course.objects.filter(pk=course_id).first().name
+                ret['message'] = 'Please create lesson for level "' + current_level_name + '" , course "' + current_course_name + '" in Master'
+                # Add new remove level which not contain lesson
+                new_level_object = Level.objects.exclude(pk=level_id).filter(course_id=course_id)
+                level_select = list()
+                for level_idx in range(0, new_level_object.count()):
+                    course_dict = dict()
+                    course_dict["id"] = new_level_object[level_idx].id
+                    course_dict["name"] = new_level_object[level_idx].name
+                    level_select.append(course_dict)
+                ret['new_level_list'] = level_select
             for i in range(0, lesson_object.count()):
                 lesson_dict = dict()
                 lesson_dict["id"] = lesson_object[i].id

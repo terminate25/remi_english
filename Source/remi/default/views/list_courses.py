@@ -16,23 +16,34 @@ from django.http import JsonResponse
 @transaction.atomic(using=DatabaseRouter.data_database)
 
 
-
-
 def list_courses(request):
     if request.method == "POST":
         ret = dict()
         ret["is_error"] = "true"
-        first_course_id = Course.objects.first().id
-        if first_course_id is None:
+        if Course.objects.first() is None:
             ret["message"] = "Please register course in Course Master"
-        elif Level.objects.filter(course_id=first_course_id).count() == 0:
-            ret["message"] = "Please register level in Level Master"
         else:
-            first_level_id = Level.objects.filter(course_id=first_course_id)[0].id
-            if Lesson.objects.filter(level_id=first_level_id).count() == 0:
-                ret["message"] = "Please register lesson in Lesson Master"
+            first_course_id = Course.objects.first().id
+            if Level.objects.filter(course_id=first_course_id).count() == 0:
+                ret["message"] = "Please register level in Level Master"
             else:
-                ret["is_error"] = "false"
+                first_level_id = Level.objects.filter(course_id=first_course_id)[0].id
+                if Lesson.objects.filter(level_id=first_level_id).count() == 0:
+                    ret["message"] = "Please register lesson in Lesson Master"
+                else:
+                    ret["is_error"] = "false"
+
+        # first_course_id = Course.objects.first().id
+        # if first_course_id is None:
+        #     ret["message"] = "Please register course in Course Master"
+        # elif Level.objects.filter(course_id=first_course_id).count() == 0:
+        #     ret["message"] = "Please register level in Level Master"
+        # else:
+        #     first_level_id = Level.objects.filter(course_id=first_course_id)[0].id
+        #     if Lesson.objects.filter(level_id=first_level_id).count() == 0:
+        #         ret["message"] = "Please register lesson in Lesson Master"
+        #     else:
+        #         ret["is_error"] = "false"
 
         return JsonResponse(ret, safe=False)
 

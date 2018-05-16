@@ -14,28 +14,66 @@
 <script type="text/javascript">
     function SelectLesson()
     {
+        var course_select = $('.course-select').val();
         var level_select = $('.level-select').val();
         $.ajax({
             url: "create_course/",
             type: "POST",
             data: {
                 'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'course_select' : course_select,
                 'level_select': level_select,
                 'is_lesson_select': true
             },
             success: function (data) {
+                var is_error = data['is_error'];
+                if (is_error == "true")
+                {
+                    bootbox.dialog({
+                        message: data["message"],
+                        buttons: {
+                            "success": {
+                                "label": "OK",
+                                "className": "btn-sm btn-primary",
+                                callback: function () {
+
+                                }
+                            }
+                        }
+                    });
+                    var level_list = data['new_level_list']
+                    if (level_list.length == 0)
+                    {
+                        //Remove course
+                        $(".course-select option[value='" + course_select  + "']").remove();
+                        SelectLevel();
+                        return;
+                    }
+
+
+                    $('.level-select').children('option').remove();
+                    for (var i = 0; i < level_list.length; i++) {
+                        $('.level-select').append($('<option></option>').val(level_list[i].id).html(level_list[i].name));
+                    }
+
+                    SelectLesson();
+
+                }
+
                 var lesson_select = data['lesson_select'];
                 $('.lesson-select').children('option').remove();
                 for (var i = 0; i < lesson_select.length; i++) {
                     $('.lesson-select').append($('<option></option>').val(lesson_select[i].id).html(lesson_select[i].name));
                 }
+
+
             },
             error: function () {
                 alert("ERROR");
             }
         });
     }
-    $('.course-select').on('change', function() {
+    function SelectLevel() {
         var course_select = $('.course-select').val();
         $.ajax({
             url: "create_course/",
@@ -47,6 +85,34 @@
             },
             success: function (data) {
                 var level_select = data['level_select'];
+                var is_error = data['is_error'];
+                if (is_error == "true")
+                {
+                    bootbox.dialog({
+                        message: data["message"],
+                        buttons: {
+                            "success": {
+                                "label": "OK",
+                                "className": "btn-sm btn-primary",
+                                callback: function () {
+
+                                }
+                            }
+                        }
+                    });
+
+                    $(".course-select option[value='" + course_select  + "']").remove();
+                    SelectLevel();
+                    return;
+
+//                    $('.course-select').children('option').remove();
+//                    for (var i = 0; i < course_list.length; i++) {
+//                        $('.course-select').append($('<option></option>').val(course_list[i].id).html(course_list[i].name));
+//                    }
+//                    SelectLevel();
+
+                }
+
                 $('.level-select').children('option').remove();
                 for (var i = 0; i < level_select.length; i++) {
                     $('.level-select').append($('<option></option>').val(level_select[i].id).html(level_select[i].name));
@@ -57,6 +123,9 @@
                 alert("ERROR");
             }
         });
+    }
+    $('.course-select').on('change', function() {
+        SelectLevel();
     });
 
     $('.level-select').on('change', function() {
