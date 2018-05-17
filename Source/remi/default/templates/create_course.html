@@ -586,6 +586,7 @@
         var goal_percent =  $('[data-step=3]').find('.test-goalpercent');
         var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
         var list_question_change = test_global;
+        test_global = [];
         start_spinner();
 
         //remove answer select
@@ -642,9 +643,9 @@
 
         formData.append('lesson_id', lesson_id);
 
-        for (i=0; i < test_global.length; i++)
+        for (i=0; i < list_question_change.length; i++)
         {
-            formData.append('question_change', test_global[i]);
+            formData.append('question_change', list_question_change[i]);
         }
         //formData.append('list_question_change', list_question_change);
         $.ajax({

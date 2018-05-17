@@ -125,7 +125,7 @@ class CreateCourseLogic:
         #test from database
         list_testid = list()
         #list question change
-        list_question_change = params.getlist('question_change')
+        list_question_change     = params.getlist('question_change')
         test_object = Test.objects.filter(part_id=part_id)
         for i in range(0, len(test_object)):
             list_testid.append(test_object[i].id)
@@ -192,7 +192,7 @@ class CreateCourseLogic:
                 if question_order in list_questionid:
                     list_questionid.remove(question_order)
                 is_new = False
-                if not Question.objects.filter(pk=question_order):
+                if not Question.objects.filter(pk=question_order, part_id=part_id, test_id=test_new.id):
                     question_new = Question()
                     is_update_type_5 = False
                     is_new = True
