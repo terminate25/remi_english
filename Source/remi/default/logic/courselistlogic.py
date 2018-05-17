@@ -5,6 +5,7 @@ from default.config.common_config import *
 from django.db.models import Q
 from default.config.config_common import *
 from collections import OrderedDict
+from cashflow import settings
 
 
 
@@ -199,7 +200,7 @@ class CourseListLogic:
     @staticmethod
     def get_video_path(part_id):
         current_part = Part.objects.get(pk=part_id)
-        upload_video_path = '/media/' + str(part_id) + '/video/{0}'.format(current_part.video)
+        upload_video_path = settings.MEDIA_URL + str(part_id) + '/video/{0}'.format(current_part.video)
         return upload_video_path
 
     @staticmethod

@@ -1,0 +1,15 @@
+use remi_english;
+delete from course;
+delete from level;
+delete from lesson;
+delete from part;
+delete from test;
+delete from question;
+delete from answer;
+ALTER TABLE course AUTO_INCREMENT = 1;
+ALTER TABLE level AUTO_INCREMENT = 1;
+ALTER TABLE lesson AUTO_INCREMENT = 1;
+ALTER TABLE part AUTO_INCREMENT = 1;
+ALTER TABLE test AUTO_INCREMENT = 1;
+ALTER TABLE question AUTO_INCREMENT = 1;
+ALTER TABLE answer AUTO_INCREMENT = 1;

@@ -2,12 +2,7 @@ from helper.util import *
 from default.config.common_config import *
 from default.models.models import *
 from enum import Enum
-from django.conf import settings
-from django.http import JsonResponse
-import  json
-
-import base64
-import glob
+from cashflow import settings
 import os
 # import png
 class FormType(Enum):
@@ -734,7 +729,10 @@ class LagForm:
             rowtmp += '<div>'
             rowtmp += ' <h4 class="widget-title blue smaller">'
             rowtmp += '   <i class="ace-icon fa glyphicon-asterisk orange"></i>'
-            rowtmp += '     Please choose video'
+            if type == QuestionType.Type2.code:
+                rowtmp += '     Please choose image'
+            else:
+                rowtmp += '     Please choose video'
             rowtmp += ' </h4>'
             rowtmp += ' <div class="col-xs-12" id="audio-select-type1">'
             rowtmp += '    <label class="ace-file-input">'
@@ -1054,7 +1052,7 @@ class LagForm:
             rowtmp += '        Select answer'
             rowtmp += '       </h4>'
             rowtmp += '     <select class ="form-control answer-option" name="answer-{0}-{1}-{2}">'.format(str(question_id), str(type), str(test_id))
-            answer_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
+            answer_file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_URL_RELATIVE , str(lesson_id), 'test',
                                             str(test_id), str(question_id), 'answer')
             answer_file_list = list()
             if os.path.exists(answer_file_path):
@@ -1107,7 +1105,7 @@ class LagForm:
             rowtmp += '       </h4>'
             rowtmp += '     <select class ="form-control answer-option" name="answer-{0}-{1}-{2}">'.format(
                 str(question_id), str(type), str(test_id))
-            answer_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
+            answer_file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_URL_RELATIVE, str(lesson_id), 'test',
                                             str(test_id), str(question_id), 'answer')
             answer_file_list = list()
             if os.path.exists(answer_file_path):
@@ -1314,7 +1312,7 @@ class LagForm:
             rowtmp += '       </h4>'
             rowtmp += '     <select class ="form-control answer-option" name="answer-{0}-{1}-{2}">'.format(
                 str(question_id), str(type), str(test_id))
-            answer_file_path = os.path.join(settings.BASE_DIR, 'media/', str(lesson_id), 'test',
+            answer_file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_URL_RELATIVE, str(lesson_id), 'test',
                                             str(test_id), str(question_id), 'answer')
             answer_file_list = list()
             if os.path.exists(answer_file_path):

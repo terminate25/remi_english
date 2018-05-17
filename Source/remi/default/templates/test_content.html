@@ -15,7 +15,7 @@
     <!-- For type 4 only banana -->
     <input type='hidden' value='' name='answer_type4'>
     <!--End for type 4-->
-    <input type='hidden' value="media" name='root_url'>
+    <!--<input type='hidden' value="{% static  '' %}" name='root_url'>-->
     <input type='hidden' value='{{ current_test_type }}' name='current_test_type'>
     <!--For type 2 and 3,4-->
     <input type='hidden' value='0' id='current_question' name='option_run_out'>
@@ -133,8 +133,8 @@
                 var image_url = option_list[i]["url"];
 //                var src = form['root_url'].value + image_url;
                 var src = image_url;
-                var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
-                var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+                var right_image_src = '/static/images/test_image/right.jpg';
+                var failed_image_src = '/static/images/test_image/wrong.jpg';
                 var row_index = 2;
                 if (i < options_number/2) {
                     row_index = 1
@@ -176,7 +176,7 @@
                 }
             }
 
-            var audio_url = form['root_url'].value + option_dict['questions_url'];
+            var audio_url = option_dict['questions_url'];
             $('#question-content').append(
                 '<div class="row" style="height:50%;width:100%;" hidden> \n' +
                 '       <audio class="audio-player" controls autoplay > \n' +
@@ -249,8 +249,8 @@
                     var option_src = option_list[i]["url"];
 //                    var src = form['root_url'].value + option_src;
                     var src = option_src;
-                    var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
-                    var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+                    var right_image_src = '/static/images/test_image/right.jpg';
+                    var failed_image_src = '/static/images/test_image/wrong.jpg';
 
                     var onclickFunction = "loadOptionsDictType2(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
                     var rightClass = "not-right-class";
@@ -374,7 +374,7 @@
                         '<br/>' +
                         '<div class="row" style="height:50%;width:100%;">\n' +
                         '       <audio class="audio-player-question" id="audio-player-question"  controls hidden>\n' +
-                        '           <source class="audio-source" src="' + form['root_url'].value + question_audio_url + '">\n' +
+                        '           <source class="audio-source" src="' + question_audio_url + '">\n' +
                         '       </audio>\n' +
                         ' </div>');
                 var audio = document.getElementById("audio-player-question");
@@ -393,8 +393,8 @@
                         var option_src = option_list[i]["url"];
                         var src = option_src;
 //                        var src = form['root_url'].value + option_src;
-                        var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
-                        var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+                        var right_image_src = '/static/images/test_image/right.jpg';
+                        var failed_image_src = '/static/images/test_image/wrong.jpg';
 
                         var onclickFunction = "loadOptionsDictType3(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
                         var rightClass = "not-right-class";
@@ -559,7 +559,7 @@ function loadOptionsDictType4(total_question, right_question, current_question) 
                 var option_dict = result['data'];
                 form['answer_type4'].value = option_dict['answer'];
 
-                var audio_url = form['root_url'].value + option_dict['question'];
+                var audio_url = option_dict['question'];
 
                 $('#question-content').append(
                 '<div class="row" style="height:10vh;width:100%;"> \n' +
@@ -725,9 +725,9 @@ function loadOptionsDictType6(event, total_question, right_question, current_que
                 current_question = result['current_question'];
                 form['current_question'].value = current_question;
 
-                var image_url = form['root_url'].value + option_dict['image_url']
-                var image_hint_url = form['root_url'].value + option_dict['image_hint_url'];
-                var audio_url = form['root_url'].value + option_dict['audio_url'];
+                var image_url = option_dict['image_url']
+                var image_hint_url = option_dict['image_hint_url'];
+                var audio_url = option_dict['audio_url'];
                 $('#question-content').append(
                         '<div class="">' +
                         '<img class="img-thumbnail hidden-xs fixed_type_23" src="' + image_url + '" width="100%" height="70%" alt=""/>' +
@@ -791,8 +791,8 @@ function loadOptionsDictType7(event, total_question, right_question, current_que
                 var option_dict = result['data'];
                 current_question = result['current_question'];
                 form['current_question'].value = current_question;
-                var image_hint_url = form['root_url'].value + option_dict['image_hint_url'];
-                var video_url = form['root_url'].value + option_dict['video_url'];
+                var image_hint_url = option_dict['image_hint_url'];
+                var video_url = option_dict['video_url'];
                 $('#question-content').append(' <div class="video-content" style="height:80%;"  >' +
                     '<div align="center" style="height:100%; width: 100%"> ' +
                     '<video style="height:100%;width:70%; "  id="video-leson" autoplay>' +
@@ -877,8 +877,8 @@ function loadOptionsDictType7(event, total_question, right_question, current_que
                         var option_src = option_list[i]["url"];
 //                        var src = form['root_url'].value + option_src;
                         var src = option_src;
-                        var right_image_src = form['root_url'].value + '/images/test_image/right.jpg';
-                        var failed_image_src = form['root_url'].value + '/images/test_image/wrong.jpg';
+                        var right_image_src = '/static/images/test_image/right.jpg';
+                        var failed_image_src = '/static/images/test_image/wrong.jpg';
 
                         var onclickFunction = "loadOptionsDictType8(this," + String(total_question + 1) + "," + String(right_question) + "," + String(current_question) + ")";
                         var rightClass = "not-right-class";
