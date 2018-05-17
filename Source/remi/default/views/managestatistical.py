@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import redirect, render
-from helper.util import *
-from helper.lagform import *
-from default.views.authen import check_login
+from django.shortcuts import render
 from default.config.config_menu import ScreenName
-from default.config.config_role import ModuleName, UserRightType
-from default.config.common_config import *
-from default.logic.userlogic import *
+from default.logic.user_logic import (UserLogic,
+                                      User, LoginUser,
+                                      UserRoles)
+from default.views.authen import check_login
+from helper.lagform import (LagForm,
+                            GacoiFormFieldType,
+                            GacoiForm)
+from django.core.exceptions import ObjectDoesNotExist
+
 
 @check_login
 def managestatistical(request):
-
     # check view privilege
     logging_user = LoginUser.get_login_user(request)
 
@@ -29,7 +31,9 @@ def managestatistical(request):
 
     keu_form = LagForm()
     keu_form.set_title("Statistical")
-    type_form.set_view("id,user_name,login_name,teacher_id,address,phone,current_lesson,email,gender,roles")
+    type_form.set_view(
+        "id,user_name,login_name,teacher_id,address,phone,"
+        "current_lesson,email,gender,roles")
     type_form.set_key("id")
 
     type_form.set_type('password', GacoiFormFieldType.Password)
@@ -46,7 +50,8 @@ def managestatistical(request):
     type_form.get_field("gender").set_drop_down_list_values(genders)
     type_form.get_field("teacher_id").set_drop_down_list_values(teachers)
     type_form.get_field("roles").set_drop_down_list_values(roles)
-    type_form.set_search('user_name,login_name, address, gender,roles,teacher_id')
+    type_form.set_search(
+        'user_name,login_name, address, gender,roles,teacher_id')
     type_form.set_order('id,user_name,login_name,address,teacher_id,roles')
 
     type_form.init(request)
@@ -55,14 +60,15 @@ def managestatistical(request):
         reset_id = params.get('reset_id')
         try:
             user_changed = User.objects.get(id=reset_id)
-            user_changed.password = UserLogic.hash_password(params.get('new_password', None))
+            user_changed.password = UserLogic.hash_password(
+                params.get('new_password', None))
             user_changed.save()
             reset_password = False
         except ObjectDoesNotExist:
             # transaction.rollback()
             print("aaa")
 
-        # transaction.commit()
+            # transaction.commit()
 
     data = User.objects.filter(roles=UserRoles.Teacher.code)
     for dt in data:
@@ -83,16 +89,21 @@ def managestatistical(request):
         data = data.filter(login_name__contains=search)
     search = type_form.get_field("roles").get_search_value()
     if search:
-        l = list(User.objects.filter(roles__in=search).values_list('id', flat=True))
+        l = list(
+            User.objects.filter(roles__in=search).values_list('id', flat=True))
         data = data.filter(id__in=l)
     search = type_form.get_field("gender").get_search_value()
     if search:
-        l = list(User.objects.filter(gender__in=search).values_list('id', flat=True))
+        l = list(User.objects.filter(gender__in=search).values_list('id',
+                                                                    flat=True))
         data = data.filter(id__in=l)
 
     type_form.set_form_data(data)
-    type_form.set_caption(["id,user_name,login_name,address,phone,email,gender,roles, current_lesson, teacher_id",
-                           "ID,Username,Login name,Address, Phone, Email, Gender,Roles,Current Lesson ,Teacher"])
+    type_form.set_caption([
+        "id,user_name,login_name,address,phone,email,gender,roles, "
+        "current_lesson, teacher_id",
+        "ID,Username,Login name,Address, Phone, Email, Gender,Roles,"
+        "Current Lesson ,Teacher"])
 
     period_form = None
     fiscal_term = None
@@ -109,8 +120,11 @@ def managestatistical(request):
             fiscal_term = User.objects.get(id=teacher_id)
         except ObjectDoesNotExist:
             fiscal_term = None
-        period_form = GacoiForm('manage_statisticalxxx', '/manage_statistical/', 'POST')
-        period_form.set_view("id,user_name,login_name,teacher_id,address,phone,current_lesson,email,gender,roles")
+        period_form = GacoiForm('manage_statisticalxxx',
+                                '/manage_statistical/', 'POST')
+        period_form.set_view(
+            "id,user_name,login_name,teacher_id,address,phone,"
+            "current_lesson,email,gender,roles")
         period_form.set_key("id")
 
         period_form.set_type('password', GacoiFormFieldType.Password)
@@ -125,8 +139,10 @@ def managestatistical(request):
         period_form.get_field("teacher_id").set_drop_down_list_values(teachers)
         period_form.set_hidden('teacher_id', teacher_id)
         # period_form.get_field('id').set_link('?teacher_id=[id]&tab_index=2')
-        period_form.set_search('user_name,login_name, address, gender,roles,teacher_id')
-        period_form.set_order('id,user_name,login_name,address,teacher_id,roles')
+        period_form.set_search(
+            'user_name,login_name, address, gender,roles,teacher_id')
+        period_form.set_order(
+            'id,user_name,login_name,address,teacher_id,roles')
         period_form.get_field("roles").set_drop_down_list_values(roles)
         data = User.objects.filter(teacher_id=teacher_id)
         period_form.set_paging_value(15)
@@ -146,21 +162,25 @@ def managestatistical(request):
             data = data.filter(login_name__contains=search)
         search = period_form.get_field("roles").get_search_value()
         if search:
-            l = list(User.objects.filter(roles__in=search).values_list('id', flat=True))
+            l = list(User.objects.filter(roles__in=search).values_list('id',
+                                                                       flat=True))
             data = data.filter(id__in=l)
         search = period_form.get_field("gender").get_search_value()
         if search:
-            l = list(User.objects.filter(gender__in=search).values_list('id', flat=True))
+            l = list(User.objects.filter(gender__in=search).values_list('id',
+                                                                        flat=True))
             data = data.filter(id__in=l)
 
         period_form.set_form_data(data)
-        period_form.set_caption(["id,user_name,login_name,address,phone,email,gender,roles, current_lesson, teacher_id",
-                               "ID,Username,Login name,Address, Phone, Email, Gender,Roles,Current Lesson ,Teacher"])
+        period_form.set_caption([
+            "id,user_name,login_name,address,phone,email,"
+            "gender,roles, current_lesson, teacher_id",
+            "ID,Username,Login name,Address, Phone, Email, "
+            "Gender,Roles,Current Lesson ,Teacher"])
 
         period_form.set_form_data(data)
         tab_active2 = 'active'
         tab_active1 = ''
-
 
     context = {
         'user': logging_user,

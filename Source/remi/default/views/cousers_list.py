@@ -2,9 +2,10 @@
 from __future__ import unicode_literals
 from django.shortcuts import render
 from default.config.config_menu import ScreenName
-from default.logic.userlogic import LoginUser
+from default.logic.user_logic import LoginUser
 from default.views.authen import check_login
-from default.logic.testcontentlogic import *
+from default.logic.test_content_logic import (TestContentLogic,
+                                              CourseListLogic)
 
 
 @check_login
@@ -23,7 +24,7 @@ def courses_list(request):
     levels = None
     courses = None
     if course_id != '':
-        levels = CourseListLogic.get_lesson_dict(user.id, course_id)
+        levels = CourseListLogic.get_course_content(user.id, course_id)
     else:
         user_courses_id = CourseListLogic.get_user_courses_ids(user.id)
         courses = CourseListLogic.get_user_courses_dict(user.id)

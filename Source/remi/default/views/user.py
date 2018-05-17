@@ -3,8 +3,8 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from default.logic.loglogic import *
-from default.logic.userlogic import *
+from default.logic.log_logic import *
+from default.logic.user_logic import *
 from .authen import check_login
 from django.db.models import ObjectDoesNotExist
 from helper.lagform import *
@@ -26,13 +26,16 @@ def user(request):
 
     keu_form = LagForm()
     keu_form.set_title("User List")
-    type_form.set_view("id,user_name,login_name,address,phone,email,course,gender,roles,teacher_id")
+    type_form.set_view("id,user_name,login_name,address,phone,email,"
+                       "course,gender,roles,teacher_id")
     type_form.set_key("id")
 
     if logging_user.is_add_right():
-        type_form.set_insert("user_name,login_name,address, phone,course,email,gender,roles,teacher_id")
+        type_form.set_insert("user_name,login_name,address, phone,course,"
+                             "email,gender,roles,teacher_id")
     if logging_user.is_update_right():
-        type_form.set_update("user_name,login_name,address, phone,course,email,gender,roles,teacher_id")
+        type_form.set_update("user_name,login_name,address, phone,course,"
+                             "email,gender,roles,teacher_id")
     if logging_user.is_delete_right():
         type_form.set_option_deletable(True)
 
@@ -48,16 +51,21 @@ def user(request):
     type_form.get_field("gender").set_drop_down_list_values(genders)
     type_form.get_field("teacher_id").set_drop_down_list_values(teachers)
     type_form.get_field("roles").set_drop_down_list_values(roles)
-    type_form.get_field("course").set_multi_choices("select id,name from course id",
-                                                    "select c.id from course c inner join base_user_course u "
-                                                    "on u.course_id = c.id where u.user_id = [id]", 1)
+    type_form.get_field("course").set_multi_choices(
+        "select id,name from course id",
+        "select c.id from course c inner join base_user_course u "
+        "on u.course_id = c.id where u.user_id = [id]", 1)
 
-    type_form.set_search('user_name,login_name, address,gender,roles,teacher_id')
+    type_form.set_search('user_name,login_name, address,gender,'
+                         'roles,teacher_id')
     type_form.set_order('id,user_name,login_name,address,teacher_id,roles')
     type_form.init(request)
+
     if logging_user.is_update_right():
-        type_form.add_inline_user_button(InlineUserButton("Change password", "change_password",
-                                                          action="do_change_password([id])"))
+        type_form.add_inline_user_button(InlineUserButton(
+            "Change password", "change_password",
+            action="do_change_password([id])")
+        )
 
     reset_id = None
     reset_password = False
@@ -71,7 +79,9 @@ def user(request):
         # transaction.set_autocommit(False)
         try:
             user_changed = User.objects.get(id=reset_id)
-            user_changed.password = UserLogic.hash_password(params.get('new_password', None))
+            user_changed.password = UserLogic.hash_password(
+                params.get('new_password', None)
+            )
             user_changed.save()
             reset_password = False
         except ObjectDoesNotExist:
@@ -82,7 +92,8 @@ def user(request):
 
     # Check type_form.get_inline_user_button_return_value() return change_password button to open modal
     if logging_user.is_update_right():
-        if "change_password" == type_form.get_inline_user_button_return_value():
+        if "change_password" == \
+                type_form.get_inline_user_button_return_value():
             reset_id = type_form.get_key_value("id")
             reset_password = True
 
@@ -92,11 +103,17 @@ def user(request):
     if type_form.is_action(GacoiFormAction.DeleteDone):
         if logging_user.is_delete_right():
             try:
-                user_deleted = User.objects.get(pk=type_form.get_key_value("id"))
+                user_deleted = User.objects.get(
+                    pk=type_form.get_key_value("id")
+                )
                 user_deleted.delete()
-                LogOperation.log(LogModule.User, LogType.Delete, LogResult.Success, type_form.get_key_value("id"))
+                LogOperation.log(LogModule.User, LogType.Delete,
+                                 LogResult.Success,
+                                 type_form.get_key_value("id"))
             except ObjectDoesNotExist:
-                LogOperation.log(LogModule.User, LogType.Delete, LogResult.Fail, type_form.get_key_value("id"))
+                LogOperation.log(LogModule.User, LogType.Delete,
+                                 LogResult.Fail,
+                                 type_form.get_key_value("id"))
     insert = False
     update = False
     if type_form.is_action(GacoiFormAction.InsertStart):
@@ -107,7 +124,9 @@ def user(request):
     # Insert
     if type_form.is_action(GacoiFormAction.InsertDone):
         try:
-            User.objects.get(login_name=type_form.get_field('login_name').get_value_blank2none())
+            User.objects.get(login_name=type_form.get_field(
+                'login_name').get_value_blank2none()
+                             )
             error_message = "The login user is exist!"
             type_form.set_action(GacoiFormAction.InsertStart)
             type_form.set_error_message(error_message)
@@ -116,19 +135,24 @@ def user(request):
             # transaction.set_autocommit(False)
             try:
                 role = type_form.get_field('roles').get_value_blank2none()
-                teacher_id = type_form.get_field('teacher_id').get_value_blank2none()
-                user_courses = type_form.get_field('course').get_multi_choices_selected_values()
+                teacher_id = type_form.get_field(
+                    'teacher_id'
+                ).get_value_blank2none()
+                user_courses = type_form.get_field(
+                    'course').get_multi_choices_selected_values()
                 if int(role) != UserRoles.Student.code:
                     teacher_id = None
-                user_new = UserLogic.create_user(type_form.get_field('user_name').get_value_blank2none(),
-                                                 type_form.get_field('login_name').get_value_blank2none(),
-                                                 type_form.get_field('gender').get_value_blank2none(),
-                                                 role,
-                                                 type_form.get_field('phone').get_value_blank2none(),
-                                                 type_form.get_field('email').get_value_blank2none(),
-                                                 type_form.get_field('address').get_value_blank2none(),
-                                                 teacher_id,
-                                                 password=type_form.get_field('password').get_value_blank2none())
+                user_new = UserLogic.create_user(
+                    type_form.get_field('user_name').get_value_blank2none(),
+                    type_form.get_field('login_name').get_value_blank2none(),
+                    type_form.get_field('gender').get_value_blank2none(),
+                    role,
+                    type_form.get_field('phone').get_value_blank2none(),
+                    type_form.get_field('email').get_value_blank2none(),
+                    type_form.get_field('address').get_value_blank2none(),
+                    teacher_id,
+                    password=type_form.get_field(
+                        'password').get_value_blank2none())
                 UserLogic.store_user_courses(user_new.id, user_courses)
                 type_form.set_action(1000)
 
@@ -147,29 +171,38 @@ def user(request):
         try:
             user_updated = User.objects.get(id=type_form.get_key_value('id'))
             print(user_updated.login_name)
-            new_user_name = type_form.get_field('user_name').get_value_blank2none()
-            new_login_name = type_form.get_field('login_name').get_value_blank2none()
-            # if user_updated.user_name != new_user_name or user_updated.login_name != new_login_name:
+            new_user_name = type_form.get_field(
+                'user_name').get_value_blank2none()
+            new_login_name = type_form.get_field(
+                'login_name').get_value_blank2none()
             user_updated.user_name = new_user_name
             user_updated.login_name = new_login_name
             user_updated.updated_datetime = today
             role = type_form.get_field('roles').get_value_blank2none()
-            teacher_id = type_form.get_field('teacher_id').get_value_blank2none()
-            user_courses = type_form.get_field('course').get_multi_choices_selected_values()
+            teacher_id = type_form.get_field('teacher_id')\
+                .get_value_blank2none()
+            user_courses = type_form.get_field('course')\
+                .get_multi_choices_selected_values()
             if int(role) != UserRoles.Student.code:
                 teacher_id = None
-            user_updated.gender = type_form.get_field('gender').get_value_blank2none()
+            user_updated.gender = type_form.get_field('gender')\
+                .get_value_blank2none()
             user_updated.roles = role
-            user_updated.phone = type_form.get_field('phone').get_value_blank2none()
-            user_updated.email = type_form.get_field('email').get_value_blank2none()
-            user_updated.address = type_form.get_field('address').get_value_blank2none()
+            user_updated.phone = type_form.get_field('phone')\
+                .get_value_blank2none()
+            user_updated.email = type_form.get_field('email')\
+                .get_value_blank2none()
+            user_updated.address = type_form.get_field('address')\
+                .get_value_blank2none()
             user_updated.teacher_id = teacher_id
 
             type_form.get_field('roles').get_value_blank2none()
             user_updated.save()
             UserLogic.update_user_courses(user_updated.id, user_courses)
 
-            LogOperation.log(LogModule.User, LogType.Update, LogResult.Success, type_form.get_key_value('id'))
+            LogOperation.log(LogModule.User, LogType.Update,
+                             LogResult.Success,
+                             type_form.get_key_value('id'))
         except ObjectDoesNotExist:
             # transaction.rollback()
             LogOperation.log(LogModule.User, LogType.Update, LogResult.Fail)
@@ -195,7 +228,8 @@ def user(request):
         data = data.filter(login_name__contains=search)
     search = type_form.get_field("roles").get_search_value()
     if search:
-        l = list(User.objects.filter(roles__in=search).values_list('id', flat=True))
+        l = list(User.objects.filter(
+            roles__in=search).values_list('id', flat=True))
         data = data.filter(id__in=l)
     search = type_form.get_field("gender").get_search_value()
     if search:
@@ -204,8 +238,10 @@ def user(request):
 
     type_form.set_form_data(data)
     # type_form.set_form_model(User)
-    type_form.set_caption(["id,user_name,login_name,address,phone,email,gender,roles, teacher_id, course",
-                           "ID,Username,Login name,Address, Phone, Email, Gender,Roles, Teacher, Course"])
+    type_form.set_caption(["id,user_name,login_name,address,"
+                           "phone,email,gender,roles, teacher_id, course",
+                           "ID,Username,Login name,Address, "
+                           "Phone, Email, Gender,Roles, Teacher, Course"])
     info_form = None
     context = {  # "select id,name,email,password from user"
         'authType': auth_type,

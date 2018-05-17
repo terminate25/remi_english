@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from default.views.authen import *
-from default.logic.userlogic import *
+from default.logic.user_logic import *
 from default.models.models import User
 from helper.util import *
-from default.logic.userlogic import LoginUser
+from default.logic.user_logic import LoginUser
 
 
 @check_login

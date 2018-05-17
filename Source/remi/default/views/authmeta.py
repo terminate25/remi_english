@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.core.exceptions import ObjectDoesNotExist
-from default.config.config_menu import ScreenName
-from default.config.config_message import *
-from default.config.config_log import LogModule, LogType, LogResult
-from default.logic.loglogic import LogOperation
-from default.logic.userlogic import LoginUser
-from helper.util import *
-from default.views.authen import check_login
-from default.logic.metalogic import *
 
+from default.logic.metalogic import *
+from django.shortcuts import render
+
+from default.config.config_menu import ScreenName
+from default.logic.user_logic import LoginUser
+from default.views.authen import check_login
+from helper.util import *
 
 checkbox_values = []
 his_info_id = None

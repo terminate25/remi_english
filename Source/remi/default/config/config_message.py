@@ -1,7 +1,9 @@
 from enum import Enum
+
 """
 All of message are defined here
 """
+
 
 class MetaTypeMessage(Enum):
     UpdateError = "An error occurred. The MetaType could not be updated."
@@ -49,6 +51,3 @@ class FiscalTermMessage(Enum):
 
 class FiscalPeriodMessage(Enum):
     InsertError = "The FiscalPeriod could not be inserted."
-
-
-

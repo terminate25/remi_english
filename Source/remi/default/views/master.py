@@ -6,8 +6,8 @@ from default.views.authen import check_login
 from default.config.config_menu import ScreenName
 from default.config.config_role import ModuleName, UserRightType
 from default.config.common_config import *
-from default.logic.userlogic import *
-from default.logic.testcontentlogic import *
+from default.logic.user_logic import *
+from default.logic.test_content_logic import *
 
 
 @check_login

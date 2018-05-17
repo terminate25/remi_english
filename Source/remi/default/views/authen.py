@@ -43,7 +43,7 @@ def user_passes_test(login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
     def decorator(view_func):
         @wraps(view_func, assigned=available_attrs(view_func))
         def _wrapped_view(request, *args, **kwargs):
-            from default.logic.userlogic import LoginUser
+            from default.logic.user_logic import LoginUser
             if request.session.get(LoginUser.login_user_session_key) is not None:
                 # Update filter for user
                 user = LoginUser.reload(request, view_func)

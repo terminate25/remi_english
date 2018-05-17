@@ -1,9 +1,7 @@
-
 from enum import Enum
 
 
-class LessonState(Enum):
-
+class CommonState(Enum):
     Success = (1, "Success")
     Locked = (3, "Locked")
     Unlocked = (2, "Unlocked")
@@ -13,8 +11,16 @@ class LessonState(Enum):
         self.title = title
 
 
-class MasterType(Enum):
+class BaseUserRowState(Enum):
+    Unlock = (0, "Unlock")
+    Passed = (1, "Passed")
 
+    def __init__(self, code, title):
+        self.code = code
+        self.title = title
+
+
+class MasterType(Enum):
     Master = (1, "Master")
     LessonLevel = (2, "Lesson level")
     QuestionType = (3, "Question type")
@@ -54,8 +60,8 @@ class IsDone:
         self.code = code
         self.title = title
 
-class QuestionType(Enum):
 
+class QuestionType(Enum):
     Type1 = (1, " Type 1")
     Type2 = (2, " Type 2")
     Type3 = (3, " Type 3")
@@ -71,7 +77,6 @@ class QuestionType(Enum):
 
 
 class LessonItemList:
-
     id = None
     title = None
     content = None
@@ -105,7 +110,6 @@ class CreateCourseStep(Enum):
 
 
 class CourseListField:
-
     Id = (1, "id")
     Name = (2, "name")
     Level = (3, "level")

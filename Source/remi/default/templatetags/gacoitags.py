@@ -4,7 +4,7 @@ from django import template
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 from default.config.config_menu import ScreenName, config_menus
-from default.logic.userlogic import LoginUser
+from default.logic.user_logic import LoginUser
 from helper.util import GacoiForm, StringBuilder, Format
 
 register = template.Library()

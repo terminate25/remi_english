@@ -2,8 +2,8 @@
 from default.views.authen import *
 from django.shortcuts import render
 from helper.lagform import *
-from default.logic.testcontentlogic import *
-from default.logic.userlogic import LoginUser
+from default.logic.test_content_logic import *
+from default.logic.user_logic import LoginUser
 from cashflow import settings
 
 @check_login

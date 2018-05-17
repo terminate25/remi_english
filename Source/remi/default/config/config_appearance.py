@@ -32,4 +32,3 @@ class LocalizeFormat(Enum):
     ShowMeridian = True
     MeridianAM = "AM"  # "午前"
     MeridianPM = "PM"  # "午後"
-

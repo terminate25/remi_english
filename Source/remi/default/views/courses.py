@@ -5,11 +5,11 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 from default.config.config_menu import ScreenName
-from default.logic.userlogic import LoginUser
+from default.logic.user_logic import LoginUser
 from default.views.authen import check_login
 from helper.lagform import *
-from default.logic.courselistlogic import *
-from default.logic.testcontentlogic import *
+from default.logic.course_list_logic import *
+from default.logic.test_content_logic import *
 
 checkbox_values = []
 his_info_id = None
@@ -65,7 +65,8 @@ def courses(request):
                 question = 'question'
             else:
                 question = 'questions'
-            ret['error_message'] = "You are correct {0}/{1} {2}! ".format(correct_question, total_question, question)
+            ret['error_message'] = "You are correct {0}/{1} {2}! "\
+                .format(correct_question, total_question, question)
             return JsonResponse(ret, safe=False)
 
         ret = dict()

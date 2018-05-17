@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render, redirect
-from default.logic.userlogic import LoginUser, UserRoles, UserLogic
+from default.logic.user_logic import LoginUser, UserRoles, UserLogic
 from django.db.models import ObjectDoesNotExist
 from default.models.models import User
 

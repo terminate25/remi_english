@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render, redirect
-from default.logic.userlogic import LoginUser
+from default.logic.user_logic import LoginUser
 
 
 def login(request):

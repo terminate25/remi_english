@@ -3,10 +3,10 @@
 Account Manage Module
 """
 from django.db import IntegrityError, transaction
-from default.logic.createcourselogic import *
+from default.logic.create_course_logic import *
 from django.shortcuts import render
 from default.config.config_menu import *
-from default.logic.loglogic import *
+from default.logic.log_logic import *
 from .authen import check_login
 from helper.lagform import *
 from django.http import JsonResponse
@@ -56,9 +56,8 @@ def create_course(request):
             return render(request, 'create_course.html', context)
             # return JsonResponse(ret, safe=False)
 
-    #for get lesson and level option
+    # For get lesson and level option
     if request.method == "POST":
-
 
         params = request.POST
         ret = dict()
@@ -74,8 +73,10 @@ def create_course(request):
             level_object = Level.objects.filter(course_id=course_id)
             if level_object.count() == 0:
                 ret['is_error'] = "true"
-                current_course_name = Course.objects.filter(pk=course_id).first().name
-                ret['message'] = 'Please create level for course "' + current_course_name + '" in Master'
+                current_course_name = Course.objects.filter(
+                    pk=course_id).first().name
+                ret['message'] = 'Please create level for course "' + \
+                                 current_course_name + '" in Master'
                 #Add new remove course which not contain level
                 # new_course_object = Course.objects.exclude(pk=course_id)
                 # course_select = list()
@@ -112,11 +113,16 @@ def create_course(request):
             #Add new for validate
             if lesson_object.count() == 0:
                 ret['is_error'] = "true"
-                current_level_name = Level.objects.filter(pk=level_id).first().name
-                current_course_name = Course.objects.filter(pk=course_id).first().name
-                ret['message'] = 'Please create lesson for level "' + current_level_name + '" , course "' + current_course_name + '" in Master'
+                current_level_name = Level.objects\
+                    .filter(pk=level_id).first().name
+                current_course_name = Course.objects\
+                    .filter(pk=course_id).first().name
+                ret['message'] = 'Please create lesson for level "' \
+                                 + current_level_name + '" , course "' \
+                                 + current_course_name + '" in Master'
                 # Add new remove level which not contain lesson
-                new_level_object = Level.objects.exclude(pk=level_id).filter(course_id=course_id)
+                new_level_object = Level.objects.exclude(pk=level_id)\
+                    .filter(course_id=course_id)
                 level_select = list()
                 for level_idx in range(0, new_level_object.count()):
                     course_dict = dict()
@@ -132,7 +138,7 @@ def create_course(request):
             ret['lesson_select'] = lesson_select
             return JsonResponse(ret, safe=False)
 
-    #for insert
+    # For insert
     params = request.POST
     type_choose = params.get('type', '0')
     type_choose = int(type_choose)
@@ -158,7 +164,6 @@ def create_course(request):
     keu_form.set_action('/create_course/')
     keu_form.set_title("Course List")
     keu_form.set_test_id(1)
-
 
     create_current_state = 0
     is_add_question = params.get('is_add_question', '')
@@ -186,25 +191,33 @@ def create_course(request):
             ret = dict()
             question = None
             keu_form.set_question_id(current_question)
-            question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            question = keu_form.render_question_content(
+                type_choose, current_question, current_test_id
+            )
             # if type_choose == QuestionType.Type1.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             # elif type_choose == QuestionType.Type2.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             # elif type_choose == QuestionType.Type3.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             # elif type_choose == QuestionType.Type4.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             # elif type_choose == QuestionType.Type5.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             # elif type_choose == QuestionType.Type6.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             # elif type_choose == QuestionType.Type7.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             # elif type_choose == QuestionType.Type8.code:
-            #     question = keu_form.render_question_content(type_choose, current_question, current_test_id)
-
-
+            #     question = keu_form.render_question_content(
+            # type_choose, current_question, current_test_id)
             ret['question_form'] = question
             ret['current_question'] = 0
             return JsonResponse(ret, safe=False)
@@ -214,7 +227,7 @@ def create_course(request):
         ret['result'] = result
         message = "Submit Failed!"
         if result:
-            message = "Submit successed!!"
+            message = "Submit success!!"
         ret['message'] = message
         return JsonResponse(ret, safe=False)
 

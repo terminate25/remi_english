@@ -2,20 +2,23 @@
 """
 Account Manage Module
 """
-from django.db import IntegrityError, transaction
-from default.logic.createcourselogic import *
-from django.shortcuts import render, redirect
-from default.config.config_menu import *
-from default.logic.loglogic import *
-from .authen import check_login
-from helper.lagform import *
+from django.db import transaction
 from django.http import JsonResponse
+from django.shortcuts import render
+
+from default.config.config_menu import ScreenName
+from default.logic.create_course_logic import CreateCourseLogic
+from default.logic.log_logic import LoginUser
+from helper.lagform import (LagForm,
+                            Level,
+                            Course,
+                            Lesson,
+                            DatabaseRouter)
+from .authen import check_login
 
 
 @check_login
 @transaction.atomic(using=DatabaseRouter.data_database)
-
-
 def list_courses(request):
     if request.method == "POST" and request.POST.get('action_type', 0) == 0:
         ret = dict()
@@ -27,7 +30,9 @@ def list_courses(request):
             if Level.objects.filter(course_id=first_course_id).count() == 0:
                 ret["message"] = "Please register level in Level Master"
             else:
-                first_level_id = Level.objects.filter(course_id=first_course_id)[0].id
+                first_level_id = Level.objects.filter(
+                    course_id=first_course_id
+                )[0].id
                 if Lesson.objects.filter(level_id=first_level_id).count() == 0:
                     ret["message"] = "Please register lesson in Lesson Master"
                 else:

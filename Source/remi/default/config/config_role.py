@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from enum import Enum
-from .config_common import AuthMetaTypeDefine
 """
 Define role and right of user
 """
@@ -33,7 +32,6 @@ class ModuleName(Enum):
     Master = 6
     ManagerStatistical = 7
 
-config_all_filter = [AuthMetaTypeDefine.Department.code]
 
 """
 Define view belong to which module

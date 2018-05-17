@@ -1,10 +1,13 @@
-from default.views.authen import *
+from default.views.authen import check_login
 from django.shortcuts import render
-from helper.lagform import *
-from default.logic.testcontentlogic import *
+from helper.lagform import LagForm
+from default.logic.test_content_logic import (Test,
+                                              TestContentLogic,
+                                              BaseUserStep)
 from django.http import JsonResponse
-from default.logic.userlogic import LoginUser
-from default.config.config_common import *
+from default.logic.user_logic import LoginUser
+from default.config.config_common import TestResult
+
 
 @check_login
 def test_content(request):
@@ -24,8 +27,9 @@ def test_content(request):
         current_question = int(current_question)
     else:
         current_question = 0
-    options_dict = TestContentLogic.create_options_dict(current_test_type, test_id, current_question)
-    # lag_form.render_question(current_test_type, current_test_type, test_id)
+    options_dict = TestContentLogic.create_options_dict(
+        current_test_type, test_id, current_question
+    )
     is_json = params.get('is_json', '')
     if is_json == 'true':
         ret = dict()
@@ -63,7 +67,8 @@ def test_content(request):
         base_user_test.is_done = TestResult.Failed.code
         percent_goal = int(params.get('percent_goal', ''))
         question_goal = int(params.get('question_goal', ''))
-        if current_percent >= percent_goal and right_question >= question_goal:
+        if current_percent >= percent_goal and \
+                        right_question >= question_goal:
             ret['result'] = True
             base_user_test.is_done = TestResult.Done.code
 
