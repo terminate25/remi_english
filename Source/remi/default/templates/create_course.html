@@ -41,7 +41,7 @@
                             }
                         }
                     });
-                    var level_list = data['new_level_list']
+                    var level_list = data['new_level_list'];
                     if (level_list.length == 0)
                     {
                         //Remove course
@@ -50,13 +50,19 @@
                         return;
                     }
 
-
-                    $('.level-select').children('option').remove();
-                    for (var i = 0; i < level_list.length; i++) {
-                        $('.level-select').append($('<option></option>').val(level_list[i].id).html(level_list[i].name));
+                    var lesson_list = data['lesson_select'];
+                    if (lesson_list.length == 0)
+                    {
+                        $(".level-select option[value='" + level_select  + "']").remove();
+                        SelectLesson();
+                        return;
                     }
+//                    $('.level-select').children('option').remove();
+//                    for (var i = 0; i < level_list.length; i++) {
+//                        $('.level-select').append($('<option></option>').val(level_list[i].id).html(level_list[i].name));
+//                    }
 
-                    SelectLesson();
+//                    SelectLesson();
 
                 }
 
