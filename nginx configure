@@ -1,14 +1,90 @@
-structure project
+*****Structure project*******
 projectname ---- projectname ---- settings.py
             ---- static
+            ---- media
             ---- manage.py
 
 ***Test and change mod user of nginx***
-sudo -u www-data stat /username/test/static
-gpasswd -a www-data username
-chmod g+x /username && chmod g+x /username/test && chmod g+x /username/test/static
-nginx -s reload
-
+#if user parameter in /etc/nginx/nginx.config file is www-data
+   sudo -u www-data stat /username/test/static
+   gpasswd -a www-data username
+   chmod g+x /username && chmod g+x /username/test && chmod g+x /username/test/static
+   nginx -s reload
 ***After change setting files of project***
 service nginx reload
+***Set locale for distribution***
+#Check 
+   locale
+#Config
+   export LC_ALL="en_US.UTF-8"
+   apt-get install --reinstall language-pack-en-base
+   dpkg-reconfigure locales
+   export LANG="en_US.UTF-8"
+#In uwsgi ini file add
+   env = LANG=en_US.UTF-8
 ***Configure****
+#Example of nginx config file (/etc/nginx/sites-available/file_name)
+server {
+    listen: 80;
+    server_name ip_addr;
+    
+    location /static/ {
+      root /path/to/project;
+    }
+    
+    location /media/ {
+      root /path/to/project;
+    }
+    
+    location / {
+      include           uwsgi_params;
+      uwsgi_pass        unix:/run/uwsgi/project_name.sock
+    }
+}
+#Exampe of uwsgi ini file (/etc/uwsgi/sites/file_name.ini)
+[uwsgi]
+project = project_name
+base = /path/to/project
+
+env = LANG=en_US.UTF8
+
+chdir = %(base)/%(project)
+home = path/to/virtualenv/%(project)
+module = %(project).wsgi:application
+
+master = true
+processes = 5
+
+socket = /run/uwsgi/%(project).sock
+chown-socket = root:www-data
+chmod-socket = 664
+vacuum = true
+#Example of uwsgi config file (/etc/init/uwsgi.conf)
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+pre-start script
+    mkdir -p /run/uwsgi
+    chown user_name:www-data /run/uwsgi
+end script
+
+exec /usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
+#Add a few command in settings.py
+            STATIC_URL = '/static/'
+            STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+            MEDIA_URL = '/media/'
+            MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+            #If development = True => Uncomment STATICFILES_DIRS = [], comment STATIC_ROOT
+            #If nginx deploy = True => Comment STATICFILES_DIRS = [], uncomment STATIC_ROOT
+
+#Add a few command in urls.py
+            from djnago.conf.urls.static import static
+            from django.conf import settings
+            
+            urlpatterns = [..]
+            urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+            urlpatterns += static(settings.MEDIA_URL, docmument_root=settings.MEDIA_ROOT)
