@@ -16,7 +16,7 @@ from django.core.management import execute_from_command_line
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cashflow.settings")
-
+os.environ['LC_ALL'] = "en_US.UTF-8"
 application = get_wsgi_application()
 
 
