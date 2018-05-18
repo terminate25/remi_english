@@ -472,7 +472,7 @@
             }
 
         }).on('change', function () {
-            var question_id = this.name.split("-")[1];
+            var question_id = this.name.split("-")[2];
             test_global.push(question_id);
             var files = $(this).data('ace_input_files');
             var selectAnswer = $(this).closest('div').parent().next().next().children().children('select');
