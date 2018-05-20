@@ -224,14 +224,14 @@ class CourseListLogic:
     @staticmethod
     def get_next_id(current_id, next_level_id, level_type):
         if level_type == LevelType.Part:
-            current_ids = Part.objects.filter(lesson_id=next_level_id).order_by('-order').values_list('id', flat=True)
+            current_ids = list(Part.objects.filter(lesson_id=next_level_id).order_by('-order').values_list('id', flat=True))
         elif level_type == LevelType.Lesson:
-            current_ids = Lesson.objects.filter(leve_id=next_level_id).order_by('-order').values_list('id', flat=True)
+            current_ids = list(Lesson.objects.filter(level_id=next_level_id).order_by('-order').values_list('id', flat=True))
         elif level_type == LevelType.Level:
-            current_ids = Level.objects.filter(course_id=next_level_id).order_by('-order').values_list()
+            current_ids = list(Level.objects.filter(course_id=next_level_id).order_by('-order').values_list('id', flat=True))
         elif level_type == LevelType.Course:
-            user_course_ids = BaseUserCourse.objects.filter(user_id=next_level_id).values_list('course_id', flat=True)
-            current_ids = Course.objects.filter(id__in=user_course_ids).order_by('-order').values_list('id', flat=True)
+            user_course_ids = list(BaseUserCourse.objects.filter(user_id=next_level_id).values_list('course_id', flat=True))
+            current_ids = list(Course.objects.filter(id__in=user_course_ids).order_by('-order').values_list('id', flat=True))
 
         if current_ids.index(current_id) == 0:
             return None
@@ -240,9 +240,11 @@ class CourseListLogic:
 
     @staticmethod
     def get_lesson_content_dict(lesson_id, user_id):
-        parts = Part.objects.fitler(lesson_id=lesson_id)
+        parts = Part.objects.filter(lesson_id=lesson_id)
         part_ids = parts.values_list('id', flat=True)
-        base_user_parts = BaseUserPart.objects.filter(user_id=user_id, part_id__in=part_ids)
+        base_user_parts = BaseUserPart.objects.filter(
+            user_id=user_id, part_id__in=part_ids
+        )
         base_user_part_dict = {}
         for base_user_part in base_user_parts:
             base_user_part_dict[base_user_part.part_id] = base_user_part.is_done
@@ -280,7 +282,7 @@ class CourseListLogic:
                 lesson_dict['is_done'] = base_user_lessons_dict[lesson.id]
             else:
                 lesson_dict['is_done'] = TestResult.Failed.code
-            level_dict['lessons'].append(level_dict)
+            level_dict['lessons'].append(lesson_dict)
 
         return level_dict
 
